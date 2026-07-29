@@ -1,8 +1,8 @@
 # MyLove 💗
 
-[![Star](https://gitee.com/lcrworld/love/badge/star.svg?theme=dark)](https://gitee.com/lcrworld/love)
-[![Fork](https://gitee.com/lcrworld/love/badge/fork.svg?theme=dark)](https://gitee.com/lcrworld/love)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
+[![star](https://gitee.com/lcrworld/love/widgets/widget_1.svg)](https://gitee.com/lcrworld/love)
+[![fork](https://gitee.com/lcrworld/love/widgets/widget_2.svg)](https://gitee.com/lcrworld/love)
+[![license](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 
 > 喜欢不一定要拥有。但有些东西，值得被记住。
 
