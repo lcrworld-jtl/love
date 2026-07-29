@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>照片墙 · Love</title>
+  <meta name="description" content="每一张照片都是一段时光。瀑布流、3D 旋转木马、拼贴三种视图，记录在一起的每个瞬间，点击放大慢慢翻看。">
+  <meta name="keywords" content="照片墙,相册,瀑布流,3D旋转木马,拼贴,恋爱,浪漫,Love">
+  <meta name="author" content="Love">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://love.lcrworld.xyz/gallery">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📷</text></svg>">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#FF6B9D">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📷</text></svg>">
+  <link rel="preconnect" href="https://love.lcrworld.xyz">
+  <link rel="stylesheet" href="/css/style.css">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Love">
+  <meta property="og:title" content="照片墙 · Love">
+  <meta property="og:description" content="瀑布流、3D 旋转木马、拼贴三种视图，记录在一起的每个瞬间。">
+  <meta property="og:url" content="https://love.lcrworld.xyz/gallery">
+  <meta property="og:locale" content="zh_CN">
+  <meta property="og:image" content="https://love.lcrworld.xyz/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="照片墙 · Love">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="照片墙 · Love">
+  <meta name="twitter:description" content="瀑布流、3D 旋转木马、拼贴三种视图，记录在一起的每个瞬间。">
+  <meta name="twitter:image" content="https://love.lcrworld.xyz/og-image.png">
+
+  <!-- 结构化数据 -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://love.lcrworld.xyz/" },
+      { "@type": "ListItem", "position": 2, "name": "照片墙", "item": "https://love.lcrworld.xyz/gallery" }
+    ]
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "@id": "https://love.lcrworld.xyz/gallery#webpage",
+    "url": "https://love.lcrworld.xyz/gallery",
+    "name": "照片墙 · Love",
+    "description": "每一张照片都是一段时光。瀑布流、3D 旋转木马、拼贴三种视图，记录在一起的每个瞬间，点击放大慢慢翻看。",
+    "isPartOf": { "@id": "https://love.lcrworld.xyz/#website" },
+    "inLanguage": "zh-CN"
+  }
+  </script>
+  <style>
+    body[data-page="gallery"] {
+      background: linear-gradient(180deg, #fff5f7 0%, #ffe8ee 100%);
+      min-height: 100vh;
+      padding-bottom: 60px;
+    }
+    body[data-page="gallery"] .gallery-wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 20px 16px 0;
+    }
+    body[data-page="gallery"] .gallery-home {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 14px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      background: var(--card-bg);
+      color: var(--text-secondary);
+      font-size: 13px; text-decoration: none;
+      transition: all 0.2s;
+      margin-bottom: 18px;
+    }
+    body[data-page="gallery"] .gallery-home:hover { border-color: var(--primary); color: var(--primary); }
+    body[data-page="gallery"] .gallery-home svg { width: 14px; height: 14px; }
+
+    body[data-page="gallery"] .gallery-head {
+      display: flex; align-items: flex-end; justify-content: space-between; gap: 12px;
+      margin-bottom: 20px; flex-wrap: wrap;
+    }
+    body[data-page="gallery"] h1.gallery-title {
+      font-size: 28px; font-weight: 800; color: var(--primary-dark);
+      margin: 0 0 4px; letter-spacing: 2px;
+    }
+    body[data-page="gallery"] .gallery-sub {
+      font-size: 13px; color: var(--text-secondary);
+    }
+
+    /* 视图切换按钮组 */
+    body[data-page="gallery"] .view-switch {
+      display: inline-flex;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 3px;
+      gap: 2px;
+    }
+    body[data-page="gallery"] .view-switch button {
+      padding: 6px 14px;
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      font-size: 12px;
+      border-radius: 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+    body[data-page="gallery"] .view-switch button.active {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    /* ===== 视图 1：瀑布流 ===== */
+    body[data-page="gallery"] .masonry {
+      column-count: 3;
+      column-gap: 12px;
+    }
+    @media (max-width: 800px) { body[data-page="gallery"] .masonry { column-count: 2; } }
+    @media (max-width: 480px) { body[data-page="gallery"] .masonry { column-count: 1; } }
+    body[data-page="gallery"] .masonry-item {
+      break-inside: avoid;
+      margin-bottom: 12px;
+      border-radius: 14px;
+      overflow: hidden;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      cursor: pointer;
+      position: relative;
+      transition: transform 0.2s;
+    }
+    body[data-page="gallery"] .masonry-item:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(255,107,157,0.18); }
+    body[data-page="gallery"] .masonry-item img {
+      width: 100%; display: block;
+    }
+    body[data-page="gallery"] .masonry-caption {
+      padding: 10px 12px;
+      font-size: 12px;
+    }
+    body[data-page="gallery"] .masonry-caption .mc-text {
+      color: var(--text); line-height: 1.5; margin-bottom: 2px;
+    }
+    body[data-page="gallery"] .masonry-caption .mc-date {
+      color: var(--primary); font-size: 11px;
+    }
+
+    /* ===== 视图 2：3D 旋转木马 ===== */
+    body[data-page="gallery"] .carousel-wrap {
+      position: relative;
+      height: 460px;
+      perspective: 1400px;
+      margin: 30px auto 0;
+      max-width: 700px;
+    }
+    body[data-page="gallery"] .carousel {
+      position: relative;
+      width: 100%; height: 100%;
+      transform-style: preserve-3d;
+      transition: transform 0.6s cubic-bezier(0.22, 0.61, 0.36, 1);
+    }
+    body[data-page="gallery"] .carousel-item {
+      position: absolute;
+      top: 50%; left: 50%;
+      width: 240px; height: 320px;
+      margin: -160px 0 0 -120px;
+      border-radius: 16px;
+      overflow: hidden;
+      background: var(--card-bg);
+      border: 3px solid #fff;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.18);
+      backface-visibility: hidden;
+    }
+    body[data-page="gallery"] .carousel-item img {
+      width: 100%; height: 100%; object-fit: cover;
+    }
+    body[data-page="gallery"] .carousel-item .ci-caption {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      padding: 12px 14px;
+      background: linear-gradient(transparent, rgba(0,0,0,0.7));
+      color: #fff;
+      font-size: 12px;
+    }
+    body[data-page="gallery"] .carousel-item .ci-caption .ci-date {
+      font-size: 10px; opacity: 0.8;
+    }
+    body[data-page="gallery"] .carousel-nav {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: var(--card-bg);
+      color: var(--primary);
+      cursor: pointer;
+      font-size: 20px;
+      display: flex; align-items: center; justify-content: center;
+      z-index: 10;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      transition: all 0.2s;
+    }
+    body[data-page="gallery"] .carousel-nav:hover { background: var(--primary); color: #fff; }
+    body[data-page="gallery"] .carousel-nav.prev { left: -10px; }
+    body[data-page="gallery"] .carousel-nav.next { right: -10px; }
+    body[data-page="gallery"] .carousel-dots {
+      text-align: center; margin-top: 18px;
+      display: flex; justify-content: center; gap: 6px;
+    }
+    body[data-page="gallery"] .carousel-dots .dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--border); cursor: pointer;
+      transition: all 0.2s;
+    }
+    body[data-page="gallery"] .carousel-dots .dot.active {
+      background: var(--primary); transform: scale(1.3);
+    }
+    @media (max-width: 600px) {
+      body[data-page="gallery"] .carousel-wrap { height: 380px; }
+      body[data-page="gallery"] .carousel-item { width: 200px; height: 270px; margin: -135px 0 0 -100px; }
+    }
+
+    /* ===== 视图 3：拼贴网格 ===== */
+    body[data-page="gallery"] .grid-view {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 8px;
+    }
+    body[data-page="gallery"] .grid-item {
+      aspect-ratio: 1 / 1;
+      border-radius: 10px;
+      overflow: hidden;
+      cursor: pointer;
+      position: relative;
+      background: var(--border);
+    }
+    body[data-page="gallery"] .grid-item img {
+      width: 100%; height: 100%; object-fit: cover;
+      transition: transform 0.3s;
+    }
+    body[data-page="gallery"] .grid-item:hover img { transform: scale(1.08); }
+    body[data-page="gallery"] .grid-item .gi-overlay {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      padding: 18px 10px 8px;
+      background: linear-gradient(transparent, rgba(0,0,0,0.7));
+      color: #fff; font-size: 11px;
+      opacity: 0; transition: opacity 0.2s;
+    }
+    body[data-page="gallery"] .grid-item:hover .gi-overlay { opacity: 1; }
+
+    /* 空状态 */
+    body[data-page="gallery"] .gallery-empty {
+      text-align: center; padding: 60px 20px; color: var(--text-secondary);
+    }
+    body[data-page="gallery"] .gallery-empty .ge-icon { font-size: 48px; margin-bottom: 12px; }
+
+    /* ===== 大图查看器 ===== */
+    body[data-page="gallery"] .lightbox {
+      position: fixed; inset: 0; z-index: 9999;
+      background: rgba(0,0,0,0.92);
+      display: none; align-items: center; justify-content: center;
+      flex-direction: column;
+    }
+    body[data-page="gallery"] .lightbox.show { display: flex; }
+    body[data-page="gallery"] .lightbox img {
+      max-width: 90vw; max-height: 78vh;
+      border-radius: 8px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    }
+    body[data-page="gallery"] .lightbox-meta {
+      color: #fff; text-align: center;
+      margin-top: 16px; font-size: 14px;
+      max-width: 90vw;
+    }
+    body[data-page="gallery"] .lightbox-meta .lb-caption { margin-bottom: 4px; }
+    body[data-page="gallery"] .lightbox-meta .lb-date { color: rgba(255,255,255,0.6); font-size: 12px; }
+    body[data-page="gallery"] .lightbox-close {
+      position: absolute; top: 20px; right: 20px;
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.15);
+      border: none; color: #fff; cursor: pointer;
+      font-size: 24px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    body[data-page="gallery"] .lightbox-nav {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.12);
+      border: none; color: #fff; cursor: pointer;
+      font-size: 24px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    body[data-page="gallery"] .lightbox-nav.prev { left: 20px; }
+    body[data-page="gallery"] .lightbox-nav.next { right: 20px; }
+    body[data-page="gallery"] .lightbox-counter {
+      position: absolute; top: 20px; left: 50%; transform: translateX(-50%);
+      color: rgba(255,255,255,0.7); font-size: 13px;
+    }
+
+    @media (max-width: 600px) {
+      body[data-page="gallery"] h1.gallery-title { font-size: 24px; }
+      body[data-page="gallery"] .lightbox-nav { width: 40px; height: 40px; }
+    }
+  </style>
+</head>
+<body data-page="gallery">
+  <noscript><div style="padding:16px;text-align:center;background:#fff0f0;color:#c00;font-size:14px">请开启 JavaScript 以获得最佳浏览体验。</div></noscript>
+  <canvas id="sakura-canvas"></canvas>
+  <canvas id="effect-canvas"></canvas>
+  <div class="gallery-wrap">
+    <a href="/" class="gallery-home">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      <span>首页</span>
+    </a>
+    <div class="gallery-head">
+      <div>
+        <h1 class="gallery-title">照片墙</h1>
+        <p class="gallery-sub">每一张照片，都是一段时光</p>
+      </div>
+      <div class="view-switch" id="view-switch">
+        <button data-view="masonry" class="active">瀑布流</button>
+        <button data-view="carousel">旋转木马</button>
+        <button data-view="grid">拼贴</button>
+      </div>
+    </div>
+
+    <div id="gallery-container"></div>
+  </div>
+
+  <!-- 大图查看器 -->
+  <div class="lightbox" id="lightbox">
+    <button class="lightbox-close" id="lightbox-close">×</button>
+    <div class="lightbox-counter" id="lightbox-counter"></div>
+    <button class="lightbox-nav prev" id="lb-prev">‹</button>
+    <img id="lightbox-img" src="" alt="照片预览">
+    <button class="lightbox-nav next" id="lb-next">›</button>
+    <div class="lightbox-meta">
+      <div class="lb-caption" id="lb-caption"></div>
+      <div class="lb-date" id="lb-date"></div>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="footer-divider"></div>
+    <details class="footer-collapse">
+      <summary>更多页面</summary>
+      <div class="footer-links">
+        <a href="/" class="footer-link">首页</a>
+        <a href="/lover" class="footer-link">特别的人</a>
+        <a href="/capsule" class="footer-link">时间胶囊</a>
+        <a href="/stars" class="footer-link">星空许愿</a>
+        <a href="/anniversary" class="footer-link">纪念日</a>
+        <a href="/bucket-list" class="footer-link">愿望清单</a>
+        <a href="/agreement" class="footer-link">君子协定</a>
+      </div>
+    </details>
+    <div class="footer-icp">
+      <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer">冀ICP备2026028241号</a>
+    </div>
+  </footer>
+
+  <script src="/js/common.js"></script>
+  <script src="/js/sakura.js"></script>
+  <script src="/js/click-effect.js"></script>
+  <script src="/js/music-player.js"></script>
+  <script src="/js/gallery.js"></script>
+</body>
+</html>

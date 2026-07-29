@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Love · 关于爱的一些想法</title>
+  <meta name="description" content="Love 是一个记录爱与时光的站点：特别的人、时间胶囊、星空许愿、纪念日倒计时、照片墙、共同愿望清单。樱花飘落，点击生心，每一刻都值得被珍藏。">
+  <meta name="keywords" content="Love,爱,恋爱,纪念日,时间胶囊,星空许愿,照片墙,愿望清单,情侣网站,浪漫">
+  <meta name="author" content="Love">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://love.lcrworld.xyz/">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💗</text></svg>">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#FF6B9D">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💗</text></svg>">
+  <link rel="preconnect" href="https://love.lcrworld.xyz">
+  <link rel="stylesheet" href="/css/style.css">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Love">
+  <meta property="og:title" content="Love · 关于爱的一些想法">
+  <meta property="og:description" content="记录爱与时光的站点：特别的人、时间胶囊、星空许愿、纪念日倒计时、照片墙、共同愿望清单。">
+  <meta property="og:url" content="https://love.lcrworld.xyz/">
+  <meta property="og:locale" content="zh_CN">
+  <meta property="og:image" content="https://love.lcrworld.xyz/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Love · 关于爱的一些想法">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Love · 关于爱的一些想法">
+  <meta name="twitter:description" content="记录爱与时光的站点：特别的人、时间胶囊、星空许愿、纪念日倒计时、照片墙、共同愿望清单。">
+  <meta name="twitter:image" content="https://love.lcrworld.xyz/og-image.png">
+
+  <!-- 结构化数据 -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": "https://love.lcrworld.xyz/#website",
+        "url": "https://love.lcrworld.xyz/",
+        "name": "Love",
+        "description": "关于爱的一些想法",
+        "inLanguage": "zh-CN",
+        "publisher": { "@id": "https://love.lcrworld.xyz/#org" }
+      },
+      {
+        "@type": "Organization",
+        "@id": "https://love.lcrworld.xyz/#org",
+        "name": "Love",
+        "url": "https://love.lcrworld.xyz/"
+      },
+      {
+        "@type": "WebPage",
+        "@id": "https://love.lcrworld.xyz/#webpage",
+        "url": "https://love.lcrworld.xyz/",
+        "name": "Love · 关于爱的一些想法",
+        "isPartOf": { "@id": "https://love.lcrworld.xyz/#website" },
+        "about": {
+          "@type": "Thing",
+          "name": "Love"
+        },
+        "inLanguage": "zh-CN"
+      }
+    ]
+  }
+  </script>
+</head>
+<body data-page="home">
+  <noscript><div style="padding:16px;text-align:center;background:#fff0f0;color:#c00;font-size:14px">请开启 JavaScript 以获得最佳浏览体验。</div></noscript>
+  <canvas id="sakura-canvas"></canvas>
+  <canvas id="effect-canvas"></canvas>
+
+  <!-- ===== 固定组件层 ===== -->
+  <!-- 音乐播放器 -->
+  <div class="music-player" id="music-player">
+    <div class="music-cover" id="music-cover">
+      <svg viewBox="0 0 24 24" fill="currentColor" class="music-cover-default"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
+    </div>
+    <div class="music-info">
+      <div class="music-name" id="music-name">未播放</div>
+      <div class="music-status" id="music-status">加载中...</div>
+    </div>
+    <button class="music-toggle" id="music-toggle">
+      <svg viewBox="0 0 24 24" fill="currentColor" id="music-icon">
+        <path d="M8 5v14l11-7z"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- 播放列表 -->
+  <div class="music-playlist" id="music-playlist">
+    <div class="playlist-header">
+      <span>播放列表</span>
+      <button class="playlist-close" id="playlist-close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="playlist-body" id="playlist-body"></div>
+  </div>
+  <div class="playlist-overlay" id="playlist-overlay"></div>
+
+  <!-- 返回顶部 -->
+  <button class="back-top" id="back-top">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+  </button>
+
+  <!-- 申请表单 -->
+  <div class="apply-overlay" id="apply-overlay"></div>
+  <div class="apply-modal" id="apply-modal">
+    <div class="apply-header">
+      <span class="apply-title" id="apply-title">申请</span>
+      <button class="apply-close" id="apply-close-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div id="apply-form-body"></div>
+    <div class="apply-success" id="apply-success" style="display:none">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+      <div class="apply-success-text">申请已提交</div>
+      <div class="apply-success-sub">等待审核中，祝你好运</div>
+    </div>
+  </div>
+
+  <!-- ===== 主站点容器 ===== -->
+  <div id="app">
+
+    <!-- Hero 区域 -->
+    <header class="hero" id="hero">
+      <div class="hero-inner">
+        <h1 class="title" id="page-title">Love</h1>
+        <p class="subtitle" id="page-subtitle">关于爱的一些想法</p>
+        <div class="hero-entries">
+          <a href="/lover" class="hero-entry">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+            <span>特别的人</span>
+          </a>
+          <a href="/capsule" class="hero-entry">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+            <span>时间胶囊</span>
+          </a>
+          <a href="/stars" class="hero-entry">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8 5.8 21.3l2.4-7.4L2 9.4h7.6z"/></svg>
+            <span>星空许愿</span>
+          </a>
+          <a href="/anniversary" class="hero-entry">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+            <span>纪念日</span>
+          </a>
+          <a href="/gallery" class="hero-entry">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
+            <span>照片墙</span>
+          </a>
+          <a href="/bucket-list" class="hero-entry">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm-2 14l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
+            <span>愿望清单</span>
+          </a>
+        </div>
+        <div class="hero-scroll-hint">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+      </div>
+    </header>
+
+    <!-- 导航栏 -->
+    <nav class="site-nav" id="nav"></nav>
+
+    <!-- 内容区 -->
+    <main class="main" id="content"></main>
+
+    <!-- 页脚 -->
+    <footer class="site-footer">
+      <div class="footer-divider"></div>
+      <div class="footer-content">
+        <span class="footer-text">Made with </span>
+        <svg class="footer-heart" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+        <span class="footer-text"> by 井天乐</span>
+      </div>
+      <details class="footer-collapse">
+        <summary>更多页面</summary>
+        <div class="footer-links">
+          <a href="/lover" class="footer-link">特别的人</a>
+          <a href="/capsule" class="footer-link">时间胶囊</a>
+          <a href="/stars" class="footer-link">星空许愿</a>
+          <a href="/anniversary" class="footer-link">纪念日</a>
+          <a href="/gallery" class="footer-link">照片墙</a>
+          <a href="/bucket-list" class="footer-link">愿望清单</a>
+          <a href="/agreement" class="footer-link">君子协定</a>
+          <a href="/admin" class="footer-link">管理</a>
+        </div>
+      </details>
+      <div class="footer-icp">
+        <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer">冀ICP备2026028241号</a>
+      </div>
+    </footer>
+  </div>
+
+  <script src="/js/common.js"></script>
+  <script src="/js/sakura.js"></script>
+  <script src="/js/click-effect.js"></script>
+  <script src="/js/gesture.js"></script>
+  <script src="/js/widgets.js"></script>
+  <script src="/js/app.js"></script>
+</body>
+</html>

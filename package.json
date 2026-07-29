@@ -1,0 +1,14 @@
+{
+  "name": "mylove",
+  "version": "1.0.0",
+  "description": "关于爱的一些想法 — 记录爱与时光的站点",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": ["love", "romance", "anniversary", "time-capsule", "pwa"],
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}

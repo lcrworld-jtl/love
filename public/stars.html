@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>星空许愿 · Love</title>
+  <meta name="description" content="在 15 万粒子构成的宇宙星云中许下你的愿望。地球、月球、星河，虚拟摇杆自由飞行，每一颗愿望星都将在星河中闪耀。">
+  <meta name="keywords" content="星空许愿,3D宇宙,星云,粒子,Three.js,虚拟摇杆,地球,月球,浪漫,Love">
+  <meta name="author" content="Love">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://love.lcrworld.xyz/stars">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✨</text></svg>">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#0a0a2a">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✨</text></svg>">
+  <link rel="preconnect" href="https://love.lcrworld.xyz">
+  <link rel="dns-prefetch" href="https://threejs.org">
+  <link rel="stylesheet" href="/css/style.css">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Love">
+  <meta property="og:title" content="星空许愿 · Love">
+  <meta property="og:description" content="在 15 万粒子构成的宇宙星云中许下你的愿望。虚拟摇杆自由飞行。">
+  <meta property="og:url" content="https://love.lcrworld.xyz/stars">
+  <meta property="og:locale" content="zh_CN">
+  <meta property="og:image" content="https://love.lcrworld.xyz/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="星空许愿 · Love">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="星空许愿 · Love">
+  <meta name="twitter:description" content="在 15 万粒子构成的宇宙星云中许下你的愿望。">
+  <meta name="twitter:image" content="https://love.lcrworld.xyz/og-image.png">
+
+  <!-- 结构化数据 -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://love.lcrworld.xyz/" },
+      { "@type": "ListItem", "position": 2, "name": "星空许愿", "item": "https://love.lcrworld.xyz/stars" }
+    ]
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "@id": "https://love.lcrworld.xyz/stars#webpage",
+    "url": "https://love.lcrworld.xyz/stars",
+    "name": "星空许愿 · Love",
+    "description": "在 15 万粒子构成的宇宙星云中许下你的愿望。地球、月球、星河，虚拟摇杆自由飞行，每一颗愿望星都将在星河中闪耀。",
+    "isPartOf": { "@id": "https://love.lcrworld.xyz/#website" },
+    "inLanguage": "zh-CN"
+  }
+  </script>
+  <style>
+    body[data-page="stars"] {
+      background: #050518;
+      color: #fff;
+      /* 整页不滚动，把滚动交给面板内部，避免移动端整页被表单顶走挡住 canvas */
+      overflow: hidden;
+    }
+    body[data-page="stars"] #stars-canvas {
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      z-index: 0;
+      /* canvas 始终接收交互，让它能拖拽旋转 */
+      touch-action: none;
+    }
+
+    /* 顶部标题层：不拦截指针事件，让 canvas 拖拽穿透 */
+    body[data-page="stars"] .stars-overlay-title {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 5;
+      pointer-events: none;
+      text-align: center;
+      padding: 32px 20px 0;
+    }
+    body[data-page="stars"] .stars-overlay-title h1 {
+      margin: 0;
+      font-size: 34px;
+      font-weight: 800;
+      letter-spacing: 4px;
+      color: #fff;
+      text-shadow: 0 0 30px rgba(255,255,255,0.5);
+    }
+    body[data-page="stars"] .stars-overlay-title p {
+      margin: 8px 0 0;
+      font-size: 13px;
+      color: rgba(255,255,255,0.75);
+      letter-spacing: 1px;
+    }
+    body[data-page="stars"] .stars-overlay-title .stars-hint {
+      margin-top: 4px;
+      font-size: 11px;
+      color: rgba(255,255,255,0.5);
+    }
+
+    /* 浮动切换按钮：在桌面和移动端都可呼出/收起面板 */
+    body[data-page="stars"] .stars-toggle {
+      position: fixed;
+      z-index: 30;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 11px 18px;
+      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 24px;
+      background: rgba(20,20,50,0.7);
+      backdrop-filter: blur(10px);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      letter-spacing: 1px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+      transition: all 0.2s ease;
+    }
+    body[data-page="stars"] .stars-toggle:hover { background: rgba(40,40,80,0.85); }
+    body[data-page="stars"] .stars-toggle svg { width: 16px; height: 16px; }
+
+    /* 桌面端：右下角浮动 */
+    body[data-page="stars"] .stars-toggle { bottom: 28px; right: 28px; }
+
+    /* 侧边面板：默认收起在右侧（桌面）/ 底部（移动） */
+    body[data-page="stars"] .stars-panel {
+      position: fixed;
+      z-index: 20;
+      background: rgba(15,15,40,0.78);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255,255,255,0.12);
+      box-shadow: 0 10px 50px rgba(0,0,0,0.5);
+      display: flex;
+      flex-direction: column;
+      /* 默认隐藏 */
+      opacity: 0;
+      pointer-events: none;
+      transform: translateX(20px);
+      transition: opacity 0.28s ease, transform 0.28s ease;
+      overflow: hidden;
+    }
+    body[data-page="stars"] .stars-panel.open {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateX(0);
+    }
+
+    /* 桌面端面板：右侧浮动卡片 */
+    @media (min-width: 769px) {
+      body[data-page="stars"] .stars-panel {
+        top: 50%; right: 28px;
+        transform: translate(20px, -50%);
+        width: 380px;
+        max-height: 80vh;
+        border-radius: 18px;
+      }
+      body[data-page="stars"] .stars-panel.open {
+        transform: translate(0, -50%);
+      }
+    }
+
+    /* 移动端面板：底部 sheet */
+    @media (max-width: 768px) {
+      body[data-page="stars"] .stars-toggle {
+        bottom: 20px; right: 50%;
+        transform: translateX(50%);
+      }
+      body[data-page="stars"] .stars-toggle.foot-left { /* placeholder */ }
+      body[data-page="stars"] .stars-panel {
+        left: 0; right: 0; bottom: 0;
+        max-height: 78vh;
+        border-radius: 20px 20px 0 0;
+        transform: translateY(100%);
+      }
+      body[data-page="stars"] .stars-panel.open {
+        transform: translateY(0);
+      }
+    }
+
+    body[data-page="stars"] .stars-panel-head {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 18px 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      flex-shrink: 0;
+    }
+    body[data-page="stars"] .stars-panel-head .title-txt {
+      font-size: 15px; font-weight: 700; color: #fff; letter-spacing: 1px;
+      display: inline-flex; align-items: center; gap: 8px;
+    }
+    body[data-page="stars"] .stars-panel-head .title-txt svg { width: 18px; height: 18px; color: #FFD700; }
+    body[data-page="stars"] .stars-panel-close {
+      background: rgba(255,255,255,0.1); border: none; color: #fff;
+      width: 30px; height: 30px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: background 0.2s;
+    }
+    body[data-page="stars"] .stars-panel-close:hover { background: rgba(255,255,255,0.2); }
+    body[data-page="stars"] .stars-panel-close svg { width: 16px; height: 16px; }
+
+    /* 移动端顶部抓手 */
+    body[data-page="stars"] .stars-grabber {
+      display: none;
+      width: 40px; height: 4px; border-radius: 2px;
+      background: rgba(255,255,255,0.3);
+      margin: 10px auto 0;
+      flex-shrink: 0;
+    }
+    @media (max-width: 768px) {
+      body[data-page="stars"] .stars-grabber { display: block; }
+    }
+
+    body[data-page="stars"] .stars-panel-body {
+      padding: 14px 18px 20px;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      flex: 1;
+    }
+
+    /* 表单与列表样式（沿用原配色） */
+    body[data-page="stars"] .stars-section-label {
+      font-size: 12px; color: rgba(255,255,255,0.55);
+      margin: 14px 0 8px; letter-spacing: 1px;
+      display: flex; align-items: center; gap: 6px;
+    }
+    body[data-page="stars"] .stars-section-label svg { width: 14px; height: 14px; color: #FFD700; }
+    body[data-page="stars"] .stars-section-label:first-child { margin-top: 4px; }
+
+    body[data-page="stars"] input[type="text"],
+    body[data-page="stars"] textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.08);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.18);
+      font-family: inherit;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+    body[data-page="stars"] input::placeholder,
+    body[data-page="stars"] textarea::placeholder { color: rgba(255,255,255,0.4); }
+    body[data-page="stars"] textarea { resize: none; margin-top: 8px; }
+    body[data-page="stars"] .stars-color-row { display: flex; gap: 8px; margin: 10px 0; flex-wrap: wrap; }
+    body[data-page="stars"] .stars-color-dot {
+      width: 28px; height: 28px; border-radius: 50%; cursor: pointer;
+      border: 2px solid transparent; transition: all 0.2s;
+    }
+    body[data-page="stars"] .stars-color-dot.active { border-color: #fff; transform: scale(1.15); }
+    body[data-page="stars"] .stars-submit {
+      width: 100%; padding: 12px; margin-top: 6px;
+      border: none; border-radius: 12px;
+      background: linear-gradient(135deg, #667eea, #764ba2); color: #fff;
+      font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s;
+    }
+    body[data-page="stars"] .stars-submit:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(118,75,162,0.4); }
+    body[data-page="stars"] .stars-submit:disabled { opacity: 0.6; cursor: default; transform: none; }
+    body[data-page="stars"] .stars-tip { font-size: 12px; color: rgba(255,255,255,0.5); margin-top: 8px; text-align: center; }
+
+    body[data-page="stars"] .stars-wish-list { max-height: 280px; overflow-y: auto; padding-right: 2px; }
+    body[data-page="stars"] .stars-wish-item {
+      padding: 10px 12px; border-radius: 10px; margin-bottom: 8px;
+      background: rgba(255,255,255,0.05); border-left: 3px solid #FFD700;
+    }
+    body[data-page="stars"] .stars-wish-name { font-size: 12px; color: #FFD700; margin-bottom: 3px; font-weight: 600; }
+    body[data-page="stars"] .stars-wish-content { font-size: 13px; color: rgba(255,255,255,0.9); line-height: 1.6; word-break: break-word; }
+
+    body[data-page="stars"] .stars-empty {
+      text-align: center; color: rgba(255,255,255,0.5);
+      padding: 20px 10px; font-size: 13px;
+    }
+
+    /* 返回首页链接（在浮动按钮左侧） */
+    body[data-page="stars"] .stars-home {
+      position: fixed; z-index: 30;
+      top: 24px; left: 20px;
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 14px;
+      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 20px;
+      background: rgba(20,20,50,0.6);
+      backdrop-filter: blur(10px);
+      color: rgba(255,255,255,0.85);
+      font-size: 12px; text-decoration: none;
+      transition: background 0.2s;
+    }
+    body[data-page="stars"] .stars-home:hover { background: rgba(40,40,80,0.85); color: #fff; }
+    body[data-page="stars"] .stars-home svg { width: 14px; height: 14px; }
+
+    /* 移动端调整返回按钮位置 */
+    @media (max-width: 768px) {
+      body[data-page="stars"] .stars-home { top: 16px; left: 14px; padding: 7px 12px; }
+      body[data-page="stars"] .stars-overlay-title { padding-top: 22px; }
+      body[data-page="stars"] .stars-overlay-title h1 { font-size: 26px; letter-spacing: 3px; }
+      body[data-page="stars"] .stars-overlay-title p { font-size: 12px; }
+    }
+
+    /* ===== 虚拟摇杆（移动端） ===== */
+    body[data-page="stars"] .joystick-container {
+      position: fixed; z-index: 25;
+      bottom: 160px; right: 28px;
+      width: 110px; height: 110px;
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.2);
+      background: rgba(15,15,40,0.45);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      display: flex; align-items: center; justify-content: center;
+      touch-action: none;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    body[data-page="stars"] .joystick-knob {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,255,255,0.9), rgba(255,255,255,0.3));
+      box-shadow: 0 0 14px rgba(100,150,255,0.4);
+      transition: transform 0.05s ease-out;
+      position: relative;
+    }
+    body[data-page="stars"] .joystick-hint {
+      position: absolute; bottom: -22px; left: 50%; transform: translateX(-50%);
+      font-size: 10px; color: rgba(255,255,255,0.45); white-space: nowrap;
+    }
+    /* 桌面端隐藏摇杆（用键盘） */
+    @media (min-width: 769px) {
+      body[data-page="stars"] .joystick-container { display: none; }
+    }
+
+    /* 键盘操作提示（桌面端） */
+    body[data-page="stars"] .keyboard-hint {
+      position: fixed; z-index: 25;
+      bottom: 160px; right: 28px;
+      font-size: 11px; color: rgba(255,255,255,0.4);
+      letter-spacing: 0.5px; line-height: 1.8;
+      pointer-events: none;
+      text-align: right;
+    }
+    @media (max-width: 768px) {
+      body[data-page="stars"] .keyboard-hint { display: none; }
+    }
+  </style>
+</head>
+<body data-page="stars">
+  <noscript><div style="padding:16px;text-align:center;background:#1a0a0a;color:#ff9999;font-size:14px">请开启 JavaScript 以获得最佳浏览体验。</div></noscript>
+  <canvas id="stars-canvas"></canvas>
+
+  <!-- 虚拟摇杆（移动端） -->
+  <div class="joystick-container" id="joystick-container">
+    <div class="joystick-knob" id="joystick-knob"></div>
+    <div class="joystick-hint">拖拽移动</div>
+  </div>
+
+  <!-- 键盘提示（桌面端） -->
+  <div class="keyboard-hint">
+    <div>W A S D　前后左右平移</div>
+    <div>Q E　上升 / 下降</div>
+    <div>鼠标拖拽　旋转视角</div>
+    <div>滚轮　缩放</div>
+  </div>
+
+  <!-- 顶部标题（不拦截事件，可穿透拖拽 canvas） -->
+  <div class="stars-overlay-title">
+    <h1>星空许愿</h1>
+    <p>在宇宙星云中，留下一颗属于你的星</p>
+    <p class="stars-hint">拖拽旋转 · 滚轮缩放 · 点击发光的愿望星查看</p>
+  </div>
+
+  <!-- 返回首页 -->
+  <a href="/" class="stars-home">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    <span>首页</span>
+  </a>
+
+  <!-- 呼出 / 收起面板按钮 -->
+  <button class="stars-toggle" id="stars-toggle" aria-label="展开许愿面板">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8 5.8 21.3l2.4-7.4L2 9.4h7.6z"/></svg>
+    <span id="stars-toggle-text">许愿 · 查看星河</span>
+  </button>
+
+  <!-- 浮动面板：表单 + 愿望列表 -->
+  <div class="stars-panel" id="stars-panel" role="dialog" aria-label="许愿面板">
+    <div class="stars-grabber" aria-hidden="true"></div>
+    <div class="stars-panel-head">
+      <span class="title-txt">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8 5.8 21.3l2.4-7.4L2 9.4h7.6z"/></svg>
+        星河与愿望
+      </span>
+      <button class="stars-panel-close" id="stars-panel-close" aria-label="收起面板">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+    </div>
+    <div class="stars-panel-body">
+      <div class="stars-section-label">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8 5.8 21.3l2.4-7.4L2 9.4h7.6z"/></svg>
+        许下你的愿望
+      </div>
+      <input type="text" id="wish-name" placeholder="你的名字（选填）" maxlength="20">
+      <textarea id="wish-content" placeholder="写下你的愿望..." rows="3" maxlength="100"></textarea>
+      <div class="stars-color-row" id="wish-colors">
+        <div class="stars-color-dot active" data-color="#FFD700" style="background:#FFD700"></div>
+        <div class="stars-color-dot" data-color="#FF6B9D" style="background:#FF6B9D"></div>
+        <div class="stars-color-dot" data-color="#4FC3F7" style="background:#4FC3F7"></div>
+        <div class="stars-color-dot" data-color="#81C784" style="background:#81C784"></div>
+        <div class="stars-color-dot" data-color="#BA68C8" style="background:#BA68C8"></div>
+        <div class="stars-color-dot" data-color="#FF8A65" style="background:#FF8A65"></div>
+      </div>
+      <button class="stars-submit" id="wish-submit">点亮这颗星</button>
+      <div class="stars-tip">每个愿望都会化作宇宙中的一颗星</div>
+
+      <div class="stars-section-label">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8 5.8 21.3l2.4-7.4L2 9.4h7.6z"/></svg>
+        星河里的愿望
+      </div>
+      <div class="stars-wish-list" id="wish-list"></div>
+
+      <div style="margin-top:14px;text-align:center">
+        <a href="/" style="color:rgba(255,255,255,0.55);font-size:12px;text-decoration:none">返回首页</a>
+        <span style="color:rgba(255,255,255,0.3);margin:0 8px">·</span>
+        <a href="/capsule" style="color:rgba(255,255,255,0.55);font-size:12px;text-decoration:none">时间胶囊</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/common.js"></script>
+  <script src="/js/music-player.js"></script>
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://threejs.org/build/three.module.js",
+      "three/addons/": "https://threejs.org/examples/jsm/"
+    }
+  }
+  </script>
+  <footer class="site-footer" style="position:relative;z-index:10;">
+    <div class="footer-icp">
+      <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer">冀ICP备2026028241号</a>
+    </div>
+  </footer>
+
+  <script type="module" src="/js/stars.js"></script>
+</body>
+</html>

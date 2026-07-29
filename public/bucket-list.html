@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>共同愿望清单 · Love</title>
+  <meta name="description" content="一起想做的事，一件件打勾。看极光、横穿 318、养一只猫……把所有共同的愿望都列在这里，慢慢实现。">
+  <meta name="keywords" content="愿望清单,bucket list,共同愿望,恋爱,浪漫,Love">
+  <meta name="author" content="Love">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://love.lcrworld.xyz/bucket-list">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎯</text></svg>">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#FF6B9D">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎯</text></svg>">
+  <link rel="preconnect" href="https://love.lcrworld.xyz">
+  <link rel="stylesheet" href="/css/style.css">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Love">
+  <meta property="og:title" content="共同愿望清单 · Love">
+  <meta property="og:description" content="一起想做的事，一件件打勾。把所有共同的愿望都列在这里，慢慢实现。">
+  <meta property="og:url" content="https://love.lcrworld.xyz/bucket-list">
+  <meta property="og:locale" content="zh_CN">
+  <meta property="og:image" content="https://love.lcrworld.xyz/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="共同愿望清单 · Love">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="共同愿望清单 · Love">
+  <meta name="twitter:description" content="一起想做的事，一件件打勾。把所有共同的愿望都列在这里，慢慢实现。">
+  <meta name="twitter:image" content="https://love.lcrworld.xyz/og-image.png">
+
+  <!-- 结构化数据 -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://love.lcrworld.xyz/" },
+      { "@type": "ListItem", "position": 2, "name": "共同愿望清单", "item": "https://love.lcrworld.xyz/bucket-list" }
+    ]
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "@id": "https://love.lcrworld.xyz/bucket-list#webpage",
+    "url": "https://love.lcrworld.xyz/bucket-list",
+    "name": "共同愿望清单 · Love",
+    "description": "一起想做的事，一件件打勾。看极光、横穿 318、养一只猫……把所有共同的愿望都列在这里，慢慢实现。",
+    "isPartOf": { "@id": "https://love.lcrworld.xyz/#website" },
+    "inLanguage": "zh-CN"
+  }
+  </script>
+  <style>
+    body[data-page="bucket"] {
+      background: linear-gradient(180deg, #fff5f7 0%, #ffe8ee 100%);
+      min-height: 100vh;
+      padding-bottom: 60px;
+    }
+    body[data-page="bucket"] .bucket-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 20px 16px 0;
+    }
+    body[data-page="bucket"] .bucket-home {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 14px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      background: var(--card-bg);
+      color: var(--text-secondary);
+      font-size: 13px; text-decoration: none;
+      transition: all 0.2s;
+      margin-bottom: 18px;
+    }
+    body[data-page="bucket"] .bucket-home:hover { border-color: var(--primary); color: var(--primary); }
+    body[data-page="bucket"] .bucket-home svg { width: 14px; height: 14px; }
+
+    body[data-page="bucket"] h1.bucket-title {
+      font-size: 28px; font-weight: 800; color: var(--primary-dark);
+      margin: 0 0 6px; letter-spacing: 2px;
+    }
+    body[data-page="bucket"] .bucket-sub {
+      font-size: 13px; color: var(--text-secondary); margin-bottom: 24px;
+    }
+
+    /* 进度条 */
+    body[data-page="bucket"] .progress-card {
+      background: linear-gradient(135deg, #FF6B9D 0%, #FF8FB1 100%);
+      color: #fff;
+      border-radius: 18px;
+      padding: 22px 24px;
+      margin-bottom: 20px;
+      box-shadow: 0 8px 24px rgba(255,107,157,0.24);
+    }
+    body[data-page="bucket"] .progress-card .pc-head {
+      display: flex; justify-content: space-between; align-items: baseline;
+      margin-bottom: 12px;
+    }
+    body[data-page="bucket"] .progress-card .pc-label {
+      font-size: 13px; opacity: 0.92; letter-spacing: 1px;
+    }
+    body[data-page="bucket"] .progress-card .pc-count {
+      font-size: 22px; font-weight: 700;
+    }
+    body[data-page="bucket"] .progress-card .pc-count .total {
+      font-size: 13px; opacity: 0.8; font-weight: 500;
+    }
+    body[data-page="bucket"] .progress-bar {
+      height: 10px;
+      background: rgba(255,255,255,0.25);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    body[data-page="bucket"] .progress-bar .pb-fill {
+      height: 100%;
+      background: #fff;
+      border-radius: 6px;
+      transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 0 8px rgba(255,255,255,0.6);
+    }
+    body[data-page="bucket"] .progress-card .pc-percent {
+      font-size: 11px; opacity: 0.85; margin-top: 8px; text-align: right;
+    }
+
+    /* 愿望卡片 */
+    body[data-page="bucket"] .bucket-list {
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    body[data-page="bucket"] .bucket-item {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px 16px;
+      display: flex; align-items: flex-start; gap: 12px;
+      transition: all 0.25s;
+    }
+    body[data-page="bucket"] .bucket-item.done {
+      background: linear-gradient(135deg, #fffafd, #fff0f5);
+      border-color: var(--primary-light);
+    }
+    body[data-page="bucket"] .bucket-item .bi-check {
+      flex-shrink: 0;
+      width: 26px; height: 26px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      background: transparent;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex; align-items: center; justify-content: center;
+      color: #fff;
+      font-size: 14px;
+      margin-top: 2px;
+    }
+    body[data-page="bucket"] .bucket-item .bi-check:hover {
+      border-color: var(--primary);
+    }
+    body[data-page="bucket"] .bucket-item.done .bi-check {
+      background: var(--primary);
+      border-color: var(--primary);
+    }
+    body[data-page="bucket"] .bucket-item .bi-check svg {
+      width: 14px; height: 14px;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    body[data-page="bucket"] .bucket-item.done .bi-check svg { opacity: 1; }
+    body[data-page="bucket"] .bucket-item .bi-body {
+      flex: 1; min-width: 0;
+    }
+    body[data-page="bucket"] .bucket-item .bi-title {
+      font-size: 15px; font-weight: 600; color: var(--text);
+      line-height: 1.5; word-break: break-word;
+    }
+    body[data-page="bucket"] .bucket-item.done .bi-title {
+      text-decoration: line-through;
+      color: var(--text-secondary);
+    }
+    body[data-page="bucket"] .bucket-item .bi-desc {
+      font-size: 13px; color: var(--text-secondary);
+      line-height: 1.6; margin-top: 4px; word-break: break-word;
+    }
+    body[data-page="bucket"] .bucket-item .bi-meta {
+      font-size: 11px; color: var(--primary);
+      margin-top: 6px;
+    }
+    body[data-page="bucket"] .bucket-item .bi-del {
+      flex-shrink: 0;
+      width: 28px; height: 28px;
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      cursor: pointer;
+      border-radius: 6px;
+      font-size: 14px;
+      opacity: 0;
+      transition: all 0.2s;
+      display: flex; align-items: center; justify-content: center;
+    }
+    body[data-page="bucket"] .bucket-item:hover .bi-del { opacity: 1; }
+    body[data-page="bucket"] .bucket-item .bi-del:hover {
+      background: #fff0f0; color: #ff4757;
+    }
+    body[data-page="bucket"] .bucket-item .bi-del svg { width: 14px; height: 14px; }
+
+    /* 管理员添加表单 */
+    body[data-page="bucket"] .add-form {
+      background: var(--card-bg);
+      border: 1px dashed var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 18px;
+      display: none;
+    }
+    body[data-page="bucket"] .add-form.show { display: block; }
+    body[data-page="bucket"] .add-form input,
+    body[data-page="bucket"] .add-form textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 14px;
+      box-sizing: border-box;
+      margin-bottom: 8px;
+    }
+    body[data-page="bucket"] .add-form input:focus,
+    body[data-page="bucket"] .add-form textarea:focus {
+      outline: none; border-color: var(--primary);
+    }
+    body[data-page="bucket"] .add-form textarea {
+      resize: vertical; min-height: 60px;
+    }
+    body[data-page="bucket"] .add-form-actions {
+      display: flex; gap: 8px; justify-content: flex-end;
+    }
+    body[data-page="bucket"] .add-form-actions button {
+      padding: 8px 16px;
+      border-radius: 18px;
+      border: none;
+      font-size: 13px;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    body[data-page="bucket"] .add-form-actions .cancel {
+      background: transparent; color: var(--text-secondary);
+      border: 1px solid var(--border);
+    }
+    body[data-page="bucket"] .add-form-actions .submit {
+      background: var(--primary); color: #fff;
+    }
+
+    body[data-page="bucket"] .add-toggle {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 16px;
+      border-radius: 20px;
+      border: 1px dashed var(--primary);
+      background: transparent;
+      color: var(--primary);
+      font-size: 13px;
+      cursor: pointer;
+      font-family: inherit;
+      margin-bottom: 14px;
+      transition: all 0.2s;
+    }
+    body[data-page="bucket"] .add-toggle:hover {
+      background: var(--primary); color: #fff;
+    }
+    body[data-page="bucket"] .add-toggle svg { width: 14px; height: 14px; }
+
+    body[data-page="bucket"] .empty {
+      text-align: center; padding: 50px 20px;
+      color: var(--text-secondary); font-size: 14px;
+    }
+    body[data-page="bucket"] .empty .em-icon { font-size: 48px; margin-bottom: 12px; }
+
+    /* 分组标题 */
+    body[data-page="bucket"] .group-title {
+      font-size: 13px; font-weight: 600; color: var(--primary);
+      margin: 18px 0 8px; letter-spacing: 1px;
+      display: flex; align-items: center; gap: 6px;
+    }
+    body[data-page="bucket"] .group-title .gt-line {
+      flex: 1; height: 1px; background: var(--border);
+    }
+
+    @media (max-width: 600px) {
+      body[data-page="bucket"] h1.bucket-title { font-size: 24px; }
+      body[data-page="bucket"] .bucket-item .bi-del { opacity: 1; }
+    }
+  </style>
+</head>
+<body data-page="bucket">
+  <noscript><div style="padding:16px;text-align:center;background:#fff0f0;color:#c00;font-size:14px">请开启 JavaScript 以获得最佳浏览体验。</div></noscript>
+  <canvas id="sakura-canvas"></canvas>
+  <canvas id="effect-canvas"></canvas>
+  <div class="bucket-wrap">
+    <a href="/" class="bucket-home">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      <span>首页</span>
+    </a>
+    <h1 class="bucket-title">共同愿望清单</h1>
+    <p class="bucket-sub">一起想做的事，一件件打勾</p>
+
+    <!-- 进度条 -->
+    <div class="progress-card" id="progress-card"></div>
+
+    <!-- 管理员添加 -->
+    <button class="add-toggle" id="add-toggle" style="display:none">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      <span>添加新愿望</span>
+    </button>
+    <div class="add-form" id="add-form">
+      <input type="text" id="add-title" placeholder="想做的事（如：看一次极光）" maxlength="80">
+      <textarea id="add-desc" placeholder="补充说明（选填）" maxlength="200"></textarea>
+      <div class="add-form-actions">
+        <button class="cancel" id="add-cancel">取消</button>
+        <button class="submit" id="add-submit">添加</button>
+      </div>
+    </div>
+
+    <!-- 列表 -->
+    <div id="bucket-container"></div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="footer-divider"></div>
+    <details class="footer-collapse">
+      <summary>更多页面</summary>
+      <div class="footer-links">
+        <a href="/" class="footer-link">首页</a>
+        <a href="/lover" class="footer-link">特别的人</a>
+        <a href="/capsule" class="footer-link">时间胶囊</a>
+        <a href="/stars" class="footer-link">星空许愿</a>
+        <a href="/anniversary" class="footer-link">纪念日</a>
+        <a href="/gallery" class="footer-link">照片墙</a>
+        <a href="/agreement" class="footer-link">君子协定</a>
+      </div>
+    </details>
+    <div class="footer-icp">
+      <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer">冀ICP备2026028241号</a>
+    </div>
+  </footer>
+
+  <script src="/js/common.js"></script>
+  <script src="/js/sakura.js"></script>
+  <script src="/js/click-effect.js"></script>
+  <script src="/js/music-player.js"></script>
+  <script src="/js/bucket-list.js"></script>
+</body>
+</html>

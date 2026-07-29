@@ -1,0 +1,58 @@
+{
+  "name": "Love · 井天乐",
+  "short_name": "Love",
+  "description": "关于爱的一些想法：特别的人、时间胶囊、星空许愿、纪念日倒计时、照片墙、共同愿望清单",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FFF5F7",
+  "theme_color": "#FF6B9D",
+  "lang": "zh-CN",
+  "dir": "ltr",
+  "categories": ["lifestyle", "social", "entertainment"],
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💗</text></svg>",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💗</text></svg>",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "星空许愿",
+      "short_name": "许愿",
+      "description": "在宇宙星云中许下愿望",
+      "url": "/stars",
+      "icons": [{ "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✨</text></svg>", "sizes": "96x96", "type": "image/svg+xml" }]
+    },
+    {
+      "name": "时间胶囊",
+      "short_name": "胶囊",
+      "description": "写给未来的信",
+      "url": "/capsule",
+      "icons": [{ "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⏳</text></svg>", "sizes": "96x96", "type": "image/svg+xml" }]
+    },
+    {
+      "name": "纪念日倒计时",
+      "short_name": "纪念日",
+      "description": "在一起多少天",
+      "url": "/anniversary",
+      "icons": [{ "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💍</text></svg>", "sizes": "96x96", "type": "image/svg+xml" }]
+    },
+    {
+      "name": "照片墙",
+      "short_name": "照片",
+      "description": "在一起的每个瞬间",
+      "url": "/gallery",
+      "icons": [{ "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📷</text></svg>", "sizes": "96x96", "type": "image/svg+xml" }]
+    }
+  ]
+}

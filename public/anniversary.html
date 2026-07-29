@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>纪念日倒计时 · Love</title>
+  <meta name="description" content="在一起多少天，实时秒数跳动；下一个纪念日、生日倒计时。每一个值得期待的明天，都在这里。">
+  <meta name="keywords" content="纪念日,倒计时,在一起,生日,恋爱,浪漫,Love">
+  <meta name="author" content="Love">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://love.lcrworld.xyz/anniversary">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💍</text></svg>">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#FF6B9D">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💍</text></svg>">
+  <link rel="preconnect" href="https://love.lcrworld.xyz">
+  <link rel="stylesheet" href="/css/style.css">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Love">
+  <meta property="og:title" content="纪念日倒计时 · Love">
+  <meta property="og:description" content="在一起多少天，实时秒数跳动；下一个纪念日、生日倒计时。">
+  <meta property="og:url" content="https://love.lcrworld.xyz/anniversary">
+  <meta property="og:locale" content="zh_CN">
+  <meta property="og:image" content="https://love.lcrworld.xyz/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="纪念日倒计时 · Love">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="纪念日倒计时 · Love">
+  <meta name="twitter:description" content="在一起多少天，实时秒数跳动；下一个纪念日、生日倒计时。">
+  <meta name="twitter:image" content="https://love.lcrworld.xyz/og-image.png">
+
+  <!-- 结构化数据 -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://love.lcrworld.xyz/" },
+      { "@type": "ListItem", "position": 2, "name": "纪念日倒计时", "item": "https://love.lcrworld.xyz/anniversary" }
+    ]
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "@id": "https://love.lcrworld.xyz/anniversary#webpage",
+    "url": "https://love.lcrworld.xyz/anniversary",
+    "name": "纪念日倒计时 · Love",
+    "description": "在一起多少天，实时秒数跳动；下一个纪念日、生日倒计时。每一个值得期待的明天，都在这里。",
+    "isPartOf": { "@id": "https://love.lcrworld.xyz/#website" },
+    "inLanguage": "zh-CN"
+  }
+  </script>
+  <style>
+    body[data-page="anniv"] {
+      background: linear-gradient(180deg, #fff5f7 0%, #ffe8ee 100%);
+      min-height: 100vh;
+      padding-bottom: 60px;
+    }
+    body[data-page="anniv"] .anniv-wrap {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 20px 16px 0;
+      position: relative;
+      z-index: 2;
+    }
+    body[data-page="anniv"] .anniv-home {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 14px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      background: var(--card-bg);
+      color: var(--text-secondary);
+      font-size: 13px; text-decoration: none;
+      transition: all 0.2s;
+      margin-bottom: 18px;
+    }
+    body[data-page="anniv"] .anniv-home:hover { border-color: var(--primary); color: var(--primary); }
+    body[data-page="anniv"] .anniv-home svg { width: 14px; height: 14px; }
+
+    body[data-page="anniv"] h1.anniv-title {
+      font-size: 28px; font-weight: 800; color: var(--primary-dark);
+      margin: 0 0 6px; letter-spacing: 2px;
+    }
+    body[data-page="anniv"] .anniv-sub {
+      font-size: 13px; color: var(--text-secondary); margin-bottom: 24px;
+    }
+
+    /* ===== 主卡片：在一起实时计时 ===== */
+    body[data-page="anniv"] .together-card {
+      background: linear-gradient(135deg, #FF6B9D 0%, #FF8FB1 100%);
+      color: #fff;
+      border-radius: 22px;
+      padding: 32px 26px;
+      margin-bottom: 26px;
+      box-shadow: 0 14px 38px rgba(255,107,157,0.32);
+      position: relative;
+      overflow: hidden;
+    }
+    body[data-page="anniv"] .together-card::before {
+      content: '💗';
+      position: absolute; right: 16px; top: 10px;
+      font-size: 90px; opacity: 0.16;
+      animation: heartbeat 1.6s ease-in-out infinite;
+    }
+    @keyframes heartbeat {
+      0%, 100% { transform: scale(1); }
+      14% { transform: scale(1.12); }
+      28% { transform: scale(1); }
+      42% { transform: scale(1.08); }
+    }
+    body[data-page="anniv"] .together-card .tc-label {
+      font-size: 13px; opacity: 0.92; letter-spacing: 2px; margin-bottom: 4px;
+    }
+    body[data-page="anniv"] .together-card .tc-date {
+      font-size: 14px; opacity: 0.95; margin-bottom: 18px;
+    }
+    body[data-page="anniv"] .together-card .tc-days {
+      font-size: 62px; font-weight: 800; line-height: 1; margin-bottom: 6px;
+      font-variant-numeric: tabular-nums;
+      text-shadow: 0 2px 12px rgba(0,0,0,0.12);
+    }
+    body[data-page="anniv"] .together-card .tc-days .unit {
+      font-size: 18px; font-weight: 500; margin-left: 8px; opacity: 0.9;
+    }
+    body[data-page="anniv"] .together-card .tc-seconds {
+      font-size: 15px; opacity: 0.95; font-variant-numeric: tabular-nums;
+      letter-spacing: 1px;
+      padding: 6px 12px;
+      background: rgba(255,255,255,0.18);
+      border-radius: 8px;
+      display: inline-block;
+      margin-top: 4px;
+    }
+    body[data-page="anniv"] .together-empty {
+      background: var(--card-bg);
+      border: 1px dashed var(--border);
+      border-radius: 20px;
+      padding: 36px 20px;
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: 14px;
+      margin-bottom: 26px;
+    }
+
+    /* ===== 倒计时网格 ===== */
+    body[data-page="anniv"] .countdown-head {
+      display: flex; align-items: center; gap: 10px;
+      margin: 8px 0 16px;
+    }
+    body[data-page="anniv"] .countdown-head .ch-line {
+      flex: 1; height: 1px;
+      background: linear-gradient(90deg, var(--border), transparent);
+    }
+    body[data-page="anniv"] .countdown-head .ch-title {
+      font-size: 15px; font-weight: 700; color: var(--primary-dark);
+      letter-spacing: 1px;
+    }
+    body[data-page="anniv"] .countdown-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 14px;
+    }
+    body[data-page="anniv"] .countdown-card {
+      position: relative;
+      border-radius: 18px;
+      padding: 22px 20px;
+      color: #fff;
+      overflow: hidden;
+      box-shadow: 0 8px 22px rgba(0,0,0,0.10);
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      min-height: 140px;
+      display: flex; flex-direction: column; justify-content: space-between;
+    }
+    body[data-page="anniv"] .countdown-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 14px 32px rgba(0,0,0,0.16);
+    }
+    body[data-page="anniv"] .countdown-card .cc-bg-icon {
+      position: absolute; right: -10px; bottom: -16px;
+      font-size: 90px; opacity: 0.18;
+      pointer-events: none;
+    }
+    body[data-page="anniv"] .countdown-card .cc-top {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 12px; opacity: 0.9; letter-spacing: 1px;
+      position: relative; z-index: 1;
+    }
+    body[data-page="anniv"] .countdown-card .cc-top .cc-emoji { font-size: 18px; }
+    body[data-page="anniv"] .countdown-card .cc-title {
+      font-size: 16px; font-weight: 700; margin-top: 4px;
+      position: relative; z-index: 1;
+    }
+    body[data-page="anniv"] .countdown-card .cc-date {
+      font-size: 11px; opacity: 0.85; margin-top: 2px;
+      position: relative; z-index: 1;
+    }
+    body[data-page="anniv"] .countdown-card .cc-days {
+      font-size: 36px; font-weight: 800; line-height: 1;
+      margin-top: 14px;
+      font-variant-numeric: tabular-nums;
+      position: relative; z-index: 1;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+    body[data-page="anniv"] .countdown-card .cc-days .unit {
+      font-size: 14px; font-weight: 500; margin-left: 4px; opacity: 0.9;
+    }
+    body[data-page="anniv"] .countdown-card.cc-today {
+      animation: pulseToday 1.8s ease-in-out infinite;
+    }
+    body[data-page="anniv"] .countdown-card.cc-today .cc-days {
+      font-size: 22px;
+    }
+    @keyframes pulseToday {
+      0%, 100% { box-shadow: 0 8px 22px rgba(0,0,0,0.10); }
+      50% { box-shadow: 0 14px 36px rgba(255,107,157,0.45); }
+    }
+    body[data-page="anniv"] .countdown-card.cc-past { opacity: 0.65; }
+
+    /* 不同事件类型的渐变背景 */
+    body[data-page="anniv"] .countdown-card.grad-anniversary {
+      background: linear-gradient(135deg, #FF6B9D 0%, #FF8FB1 100%);
+    }
+    body[data-page="anniv"] .countdown-card.grad-birthday {
+      background: linear-gradient(135deg, #FFB347 0%, #FFCC70 100%);
+    }
+    body[data-page="anniv"] .countdown-card.grad-custom {
+      background: linear-gradient(135deg, #A18CD1 0%, #FBC2EB 100%);
+    }
+
+    body[data-page="anniv"] .empty-grid {
+      text-align: center; padding: 30px 20px; color: var(--text-secondary);
+      font-size: 13px;
+      background: var(--card-bg); border: 1px dashed var(--border);
+      border-radius: 16px;
+    }
+
+    @media (max-width: 600px) {
+      body[data-page="anniv"] .together-card { padding: 24px 20px; }
+      body[data-page="anniv"] .together-card .tc-days { font-size: 48px; }
+      body[data-page="anniv"] h1.anniv-title { font-size: 24px; }
+      body[data-page="anniv"] .countdown-card .cc-days { font-size: 30px; }
+    }
+  </style>
+</head>
+<body data-page="anniv">
+  <noscript><div style="padding:16px;text-align:center;background:#fff0f0;color:#c00;font-size:14px">请开启 JavaScript 以获得最佳浏览体验。</div></noscript>
+  <canvas id="sakura-canvas"></canvas>
+  <canvas id="effect-canvas"></canvas>
+  <div class="anniv-wrap">
+    <a href="/" class="anniv-home">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      <span>首页</span>
+    </a>
+    <h1 class="anniv-title">纪念日倒计时</h1>
+    <p class="anniv-sub">每一个值得期待的明天</p>
+
+    <!-- 在一起实时计时 -->
+    <div id="together-card"></div>
+
+    <!-- 下一个纪念日 / 生日倒计时 -->
+    <div class="countdown-head">
+      <span class="ch-title">即将到来</span>
+      <span class="ch-line"></span>
+    </div>
+    <div class="countdown-grid" id="countdown-grid"></div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="footer-divider"></div>
+    <details class="footer-collapse">
+      <summary>更多页面</summary>
+      <div class="footer-links">
+        <a href="/" class="footer-link">首页</a>
+        <a href="/lover" class="footer-link">特别的人</a>
+        <a href="/capsule" class="footer-link">时间胶囊</a>
+        <a href="/stars" class="footer-link">星空许愿</a>
+        <a href="/gallery" class="footer-link">照片墙</a>
+        <a href="/bucket-list" class="footer-link">愿望清单</a>
+        <a href="/agreement" class="footer-link">君子协定</a>
+      </div>
+    </details>
+    <div class="footer-icp">
+      <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer">冀ICP备2026028241号</a>
+    </div>
+  </footer>
+
+  <script src="/js/common.js"></script>
+  <script src="/js/sakura.js"></script>
+  <script src="/js/click-effect.js"></script>
+  <script src="/js/music-player.js"></script>
+  <script src="/js/anniversary.js"></script>
+</body>
+</html>

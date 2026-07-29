@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="index, follow">
+  <meta name="description" content="异性交往君子协定 / Gentleman's Agreement">
+  <title>君子协定</title>
+  <style>
+    /* ===== 主题变量 ===== */
+    :root {
+      --bg: #ffffff;
+      --fg: #1a1a1a;
+      --muted: #6b7280;
+      --accent: #2563eb;
+      --accent2: #db2777;
+      --accent-fg: #ffffff;
+      --border: #e5e7eb;
+      --card: #f9fafb;
+      --focus: #2563eb;
+      --fs: 18px;
+      --lh: 1.8;
+      --ls: 0;
+      --ff: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+      --mw: 720px;
+    }
+    [data-theme="dark"] {
+      --bg: #1a1a1a; --fg: #e5e5e5; --muted: #9ca3af;
+      --accent: #60a5fa; --accent2: #f472b6;
+      --accent-fg: #0a0a0a;
+      --border: #374151; --card: #262626; --focus: #60a5fa;
+    }
+    [data-theme="sepia"] {
+      --bg: #f4ecd8; --fg: #5b4636; --muted: #8a7560;
+      --accent: #8b5e3c; --accent2: #a16207;
+      --accent-fg: #fff;
+      --border: #d9caab; --card: #ede0c8; --focus: #8b5e3c;
+    }
+    [data-theme="contrast"] {
+      --bg: #000; --fg: #fff; --muted: #ff0;
+      --accent: #ff0; --accent2: #0ff;
+      --accent-fg: #000;
+      --border: #fff; --card: #1a1a1a; --focus: #ff0;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: var(--ff);
+      font-size: var(--fs);
+      line-height: var(--lh);
+      letter-spacing: var(--ls);
+      -webkit-font-smoothing: antialiased;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    /* 跳转链接 */
+    .skip-link {
+      position: absolute; top: -100px; left: 0;
+      background: var(--accent); color: var(--accent-fg);
+      padding: 10px 18px; z-index: 1000;
+      text-decoration: none; border-radius: 0 0 6px 0;
+      font-size: 14px; font-weight: 600;
+    }
+    .skip-link:focus { top: 0; }
+
+    /* 阅读进度条 */
+    .progress {
+      position: fixed; top: 0; left: 0; height: 3px;
+      background: var(--accent);
+      width: 0; z-index: 100;
+      transition: width 0.1s;
+    }
+
+    /* 顶部栏 */
+    header {
+      position: sticky; top: 0; z-index: 50;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 20px;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px; flex-wrap: wrap;
+    }
+    .brand {
+      display: flex; align-items: center; gap: 12px;
+    }
+    .brand-title {
+      font-size: 1.3em; font-weight: 800;
+      letter-spacing: 2px;
+      color: var(--accent);
+    }
+    .brand-sub {
+      display: block;
+      font-size: 0.55em; font-weight: 400;
+      color: var(--muted);
+      letter-spacing: 1px;
+      -webkit-text-fill-color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .header-actions { display: flex; gap: 8px; align-items: center; }
+    .lang-switch {
+      display: inline-flex; border: 1px solid var(--border); border-radius: 6px; overflow: hidden;
+    }
+    .lang-btn {
+      background: var(--card); color: var(--fg);
+      border: none; padding: 7px 12px; font-size: 13px; font-family: inherit;
+      cursor: pointer; min-height: 34px;
+    }
+    .lang-btn.active { background: var(--accent); color: var(--accent-fg); font-weight: 600; }
+    .lang-btn + .lang-btn { border-left: 1px solid var(--border); }
+    .lang-btn:focus-visible, .fab:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+
+    /* 正文 */
+    main {
+      max-width: var(--mw);
+      margin: 0 auto;
+      padding: 32px 20px 80px;
+    }
+    article { min-height: 50vh; }
+    article :is(h1, h2, h3, h4) {
+      margin: 1.5em 0 0.6em; line-height: 1.4; font-weight: 700;
+    }
+    article h1 { font-size: 1.6em; }
+    article h2 { font-size: 1.35em; }
+    article h3 { font-size: 1.15em; }
+    article p { margin: 0.8em 0; }
+    article ul, article ol { margin: 0.8em 0; padding-left: 1.8em; }
+    article li { margin: 0.3em 0; }
+    article blockquote {
+      margin: 1em 0; padding: 0.6em 1em;
+      border-left: 4px solid var(--accent);
+      background: var(--card); border-radius: 0 6px 6px 0;
+    }
+    article a { color: var(--accent); }
+    article strong, article b { font-weight: 700; }
+    article hr { border: none; border-top: 1px solid var(--border); margin: 2em 0; }
+
+    .updated {
+      margin-top: 48px; padding-top: 16px;
+      border-top: 1px solid var(--border);
+      color: var(--muted); font-size: 0.8em; text-align: center;
+    }
+    .empty-state {
+      text-align: center; color: var(--muted);
+      padding: 80px 20px; font-size: 0.95em;
+    }
+
+    /* ===== 右侧常驻无障碍 FAB ===== */
+    .fab {
+      position: fixed; right: 20px; bottom: 20px; z-index: 90;
+      width: 52px; height: 52px; border-radius: 50%;
+      background: var(--accent);
+      color: #fff; border: none; cursor: pointer;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+      display: flex; align-items: center; justify-content: center;
+      transition: transform 0.2s, box-shadow 0.2s;
+      overflow: hidden;
+    }
+    .fab:hover { transform: scale(1.08); box-shadow: 0 8px 24px rgba(0,0,0,0.35); }
+    .fab .fab-icon { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; display: block; }
+    .fab.is-open { transform: rotate(90deg); }
+
+    /* 右侧抽屉面板 */
+    .drawer-backdrop {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.35);
+      z-index: 95; opacity: 0; pointer-events: none;
+      transition: opacity 0.25s;
+    }
+    .drawer-backdrop.show { opacity: 1; pointer-events: auto; }
+
+    .drawer {
+      position: fixed; top: 0; right: 0; bottom: 0;
+      width: 320px; max-width: 85vw; z-index: 96;
+      background: var(--bg); color: var(--fg);
+      border-left: 1px solid var(--border);
+      box-shadow: -10px 0 40px rgba(0,0,0,0.2);
+      transform: translateX(100%);
+      transition: transform 0.28s ease;
+      display: flex; flex-direction: column;
+      overflow-y: auto;
+    }
+    .drawer.show { transform: translateX(0); }
+    .drawer-head {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 18px; border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .drawer-head h2 {
+      margin: 0; font-size: 15px; font-weight: 700; letter-spacing: 1px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .drawer-close {
+      background: var(--card); border: 1px solid var(--border); border-radius: 6px;
+      width: 32px; height: 32px; cursor: pointer; color: var(--fg);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .drawer-close:hover { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
+    .drawer-close svg { width: 16px; height: 16px; }
+    .drawer-body {
+      padding: 18px; flex: 1; overflow-y: auto;
+      display: flex; flex-direction: column; gap: 18px;
+    }
+
+    .a11y-section { display: flex; flex-direction: column; gap: 8px; }
+    .a11y-label {
+      font-size: 12px; color: var(--muted); font-weight: 600;
+      letter-spacing: 1px; text-transform: uppercase;
+    }
+    .a11y-row { display: flex; gap: 0; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; flex-wrap: wrap; }
+    .a11y-btn {
+      flex: 1; min-width: 0;
+      background: var(--card); color: var(--fg);
+      border: none; border-right: 1px solid var(--border);
+      padding: 8px 10px; font-size: 13px; font-family: inherit;
+      cursor: pointer; min-height: 36px;
+      display: inline-flex; align-items: center; justify-content: center; gap: 4px;
+      transition: background 0.15s;
+    }
+    .a11y-btn:last-child { border-right: none; }
+    .a11y-btn:hover { background: var(--accent); color: var(--accent-fg); }
+    .a11y-btn.active { background: var(--accent); color: var(--accent-fg); font-weight: 600; }
+    .a11y-btn:focus-visible { outline: 3px solid var(--focus); outline-offset: -2px; position: relative; z-index: 2; }
+    .a11y-action {
+      width: 100%; background: var(--card); color: var(--fg);
+      border: 1px solid var(--border); border-radius: 6px;
+      padding: 9px 12px; font-size: 13px; font-family: inherit;
+      cursor: pointer; min-height: 38px;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      transition: background 0.15s;
+    }
+    .a11y-action:hover { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
+    .a11y-action.active { background: var(--accent); color: var(--accent-fg); }
+    .a11y-action svg { width: 15px; height: 15px; }
+    .a11y-hint { font-size: 11px; color: var(--muted); line-height: 1.5; }
+
+    @media print {
+      .progress, header, .skip-link, .fab, .drawer, .drawer-backdrop { display: none !important; }
+      body { font-size: 12pt; }
+      main { max-width: 100%; padding: 0; }
+    }
+
+    @media (max-width: 600px) {
+      :root { --fs: 16px; }
+      header { padding: 10px 14px; }
+      .brand-title { font-size: 1.1em; }
+      main { padding: 24px 16px 70px; }
+      .fab { right: 14px; bottom: 14px; }
+    }
+  </style>
+</head>
+<body>
+  <a href="#content" class="skip-link" data-i18n="skip">跳到正文</a>
+  <div class="progress" id="progress" role="progressbar" aria-label="阅读进度" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+
+  <header>
+    <div class="brand">
+      <div>
+        <span class="brand-title" id="doc-title" data-i18n="title">君子协定</span>
+        <span class="brand-sub" data-i18n="subtitle">Gentleman's Agreement</span>
+      </div>
+    </div>
+    <div class="header-actions">
+      <div class="lang-switch" role="group" aria-label="Language / 语言">
+        <button class="lang-btn active" data-lang="zh" aria-label="中文">中</button>
+        <button class="lang-btn" data-lang="en" aria-label="English">EN</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <article id="content" tabindex="-1" aria-live="polite">
+      <div class="empty-state"><span data-i18n="loading">正在加载…</span></div>
+    </article>
+    <footer style="text-align:center;padding:20px 16px 32px;margin-top:40px;border-top:1px solid var(--border);">
+      <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer" style="font-size:12px;color:var(--muted);text-decoration:none;opacity:0.7;transition:opacity 0.2s;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.7">冀ICP备2026028241号</a>
+    </footer>
+  </main>
+
+  <!-- 右侧常驻无障碍 FAB -->
+  <button class="fab" id="a11y-fab" aria-label="无障碍设置" aria-expanded="false" aria-controls="a11y-drawer" title="无障碍设置">
+    <img src="/a11y-icon.png" alt="无障碍设置" class="fab-icon">
+  </button>
+
+  <!-- 抽屉 + 遮罩 -->
+  <div class="drawer-backdrop" id="drawer-backdrop"></div>
+  <aside class="drawer" id="a11y-drawer" role="dialog" aria-label="无障碍设置" aria-modal="false">
+    <div class="drawer-head">
+      <h2><img src="/a11y-icon.png" alt="" width="18" height="18" style="border-radius:4px;object-fit:cover"><span data-i18n="a11y">无障碍设置</span></h2>
+      <button class="drawer-close" id="drawer-close" aria-label="关闭">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="drawer-body">
+      <div class="a11y-section">
+        <span class="a11y-label" data-i18n="fontsize">字号</span>
+        <div class="a11y-row" role="group" aria-label="字号">
+          <button class="a11y-btn" id="fs-dec" aria-label="缩小字号">A-</button>
+          <button class="a11y-btn" id="fs-inc" aria-label="放大字号">A+</button>
+        </div>
+      </div>
+      <div class="a11y-section">
+        <span class="a11y-label" data-i18n="theme">主题</span>
+        <div class="a11y-row" role="group" aria-label="主题">
+          <button class="a11y-btn" data-theme-btn="light" data-i18n="theme_light">浅</button>
+          <button class="a11y-btn" data-theme-btn="dark" data-i18n="theme_dark">深</button>
+          <button class="a11y-btn" data-theme-btn="sepia" data-i18n="theme_sepia">护眼</button>
+          <button class="a11y-btn" data-theme-btn="contrast" data-i18n="theme_contrast">高对比</button>
+        </div>
+      </div>
+      <div class="a11y-section">
+        <span class="a11y-label" data-i18n="lineheight">行高</span>
+        <div class="a11y-row" role="group" aria-label="行高">
+          <button class="a11y-btn" data-lh="1.5" data-i18n="lh_tight">紧</button>
+          <button class="a11y-btn" data-lh="1.8" data-i18n="lh_normal">标</button>
+          <button class="a11y-btn" data-lh="2.2" data-i18n="lh_loose">松</button>
+        </div>
+      </div>
+      <div class="a11y-section">
+        <span class="a11y-label" data-i18n="letterspacing">字距</span>
+        <div class="a11y-row" role="group" aria-label="字距">
+          <button class="a11y-btn" data-ls="0" data-i18n="ls_normal">标</button>
+          <button class="a11y-btn" data-ls="0.05em" data-i18n="ls_wide">宽</button>
+        </div>
+      </div>
+      <div class="a11y-section">
+        <span class="a11y-label" data-i18n="fontfamily">字体</span>
+        <div class="a11y-row" role="group" aria-label="字体">
+          <button class="a11y-btn" data-ff="sans" data-i18n="ff_sans">黑</button>
+          <button class="a11y-btn" data-ff="serif" data-i18n="ff_serif">宋</button>
+        </div>
+      </div>
+      <div class="a11y-section">
+        <span class="a11y-label" data-i18n="actions">操作</span>
+        <button class="a11y-action" id="tts-btn" aria-pressed="false">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+          <span data-i18n="tts">朗读</span>
+        </button>
+        <button class="a11y-action" id="print-btn">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg>
+          <span data-i18n="print">打印</span>
+        </button>
+        <button class="a11y-action" id="reset-btn">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.65 6.35A7.958 7.958 0 0 0 12 4a8 8 0 1 0 7.74 10h-2.08A6 6 0 1 1 12 6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+          <span data-i18n="reset">重置</span>
+        </button>
+      </div>
+      <div class="a11y-hint" data-i18n="a11y_hint">所有设置自动保存到本地，下次访问保留。按 Esc 可关闭面板。</div>
+    </div>
+  </aside>
+
+  <script>
+  (function () {
+    'use strict';
+    // 注册 Service Worker，带上自更新机制
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/service-worker.js').then(function (reg) {
+        // 监听 SW 更新
+        reg.addEventListener('updatefound', function () {
+          var newWorker = reg.installing;
+          if (!newWorker) return;
+          newWorker.addEventListener('statechange', function () {
+            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+              // 有新 SW 安装完成，提示用户刷新
+              if (confirm('页面有更新，是否刷新？')) {
+                window.location.reload();
+              }
+            }
+          });
+        });
+      }).catch(function () {});
+    }
+
+    // 强制跳过 SW 等待，立即激活新 SW
+    if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+      navigator.serviceWorker.controller.postMessage('SKIP_WAITING');
+    }
+    // 旧缓存清理
+    if ('caches' in window) {
+      caches.keys().then(function (keys) {
+        keys.forEach(function (k) { caches.delete(k); });
+      }).catch(function () {});
+    }
+  })();
+  </script>
+  <script>
+  (function () {
+    'use strict';
+    var root = document.documentElement;
+    var PREFS_KEY = 'agreement_prefs';
+    var LANG_KEY = 'agreement_lang';
+    var defaults = { theme: 'light', fs: 18, lh: 1.8, ls: '0', ff: 'sans' };
+    var prefs = loadPrefs();
+
+    // ===== 双语字典 =====
+    var i18n = {
+      zh: {
+        skip: '跳到正文',
+        title: '君子协定',
+        subtitle: "Gentleman's Agreement",
+        loading: '正在加载…',
+        empty: '暂无内容',
+        loadfail: '加载失败，请刷新重试',
+        a11y: '无障碍设置',
+        fontsize: '字号',
+        theme: '主题',
+        theme_light: '浅', theme_dark: '深', theme_sepia: '护眼', theme_contrast: '高对比',
+        lineheight: '行高',
+        lh_tight: '紧', lh_normal: '标', lh_loose: '松',
+        letterspacing: '字距',
+        ls_normal: '标', ls_wide: '宽',
+        fontfamily: '字体',
+        ff_sans: '黑', ff_serif: '宋',
+        actions: '操作',
+        tts: '朗读', tts_stop: '停止',
+        print: '打印', reset: '重置',
+        a11y_hint: '所有设置自动保存到本地，下次访问保留。按 Esc 可关闭面板。',
+        updated: '最后更新',
+        progress_label: '阅读进度'
+      },
+      en: {
+        skip: 'Skip to content',
+        title: "Gentleman's Agreement",
+        subtitle: '君子协定',
+        loading: 'Loading…',
+        empty: 'No content yet',
+        loadfail: 'Failed to load. Please refresh.',
+        a11y: 'Accessibility',
+        fontsize: 'Font size',
+        theme: 'Theme',
+        theme_light: 'Light', theme_dark: 'Dark', theme_sepia: 'Sepia', theme_contrast: 'Contrast',
+        lineheight: 'Line height',
+        lh_tight: 'Tight', lh_normal: 'Normal', lh_loose: 'Loose',
+        letterspacing: 'Letter spacing',
+        ls_normal: 'Normal', ls_wide: 'Wide',
+        fontfamily: 'Font',
+        ff_sans: 'Sans', ff_serif: 'Serif',
+        actions: 'Actions',
+        tts: 'Read aloud', tts_stop: 'Stop',
+        print: 'Print', reset: 'Reset',
+        a11y_hint: 'All settings are saved locally. Press Esc to close this panel.',
+        updated: 'Last updated',
+        progress_label: 'Reading progress'
+      }
+    };
+
+    // 语言：URL 参数 > localStorage > 默认中文
+    function getLang() {
+      var urlLang = new URLSearchParams(location.search).get('lang');
+      if (urlLang === 'en' || urlLang === 'zh') {
+        try { localStorage.setItem(LANG_KEY, urlLang); } catch (e) {}
+        return urlLang;
+      }
+      try {
+        var saved = localStorage.getItem(LANG_KEY);
+        if (saved === 'en' || saved === 'zh') return saved;
+      } catch (e) {}
+      return 'zh';
+    }
+    var lang = getLang();
+    function t(key) { return (i18n[lang] && i18n[lang][key]) || key; }
+
+    function applyLang() {
+      root.setAttribute('lang', lang === 'en' ? 'en' : 'zh-CN');
+      document.title = t('title');
+      document.querySelectorAll('[data-i18n]').forEach(function (el) {
+        var key = el.dataset.i18n;
+        var txt = t(key);
+        if (el.classList.contains('brand-title') || el.id === 'doc-title') {
+          // 标题稍后由数据覆盖
+        }
+        el.textContent = txt;
+      });
+      // 语言按钮高亮
+      document.querySelectorAll('.lang-btn').forEach(function (b) {
+        b.classList.toggle('active', b.dataset.lang === lang);
+      });
+      // 进度条 aria
+      document.getElementById('progress').setAttribute('aria-label', t('progress_label'));
+    }
+
+    // 语言切换
+    document.querySelectorAll('.lang-btn').forEach(function (b) {
+      b.addEventListener('click', function () {
+        lang = b.dataset.lang;
+        try { localStorage.setItem(LANG_KEY, lang); } catch (e) {}
+        // 更新 URL（不刷新页面）
+        var url = new URL(location.href);
+        url.searchParams.set('lang', lang);
+        history.replaceState(null, '', url);
+        applyLang();
+        loadContent();  // 重新拉取对应语言内容
+      });
+    });
+
+    // ===== Prefs =====
+    function loadPrefs() {
+      try {
+        var s = JSON.parse(localStorage.getItem(PREFS_KEY));
+        return Object.assign({}, defaults, s || {});
+      } catch (e) { return Object.assign({}, defaults); }
+    }
+    function savePrefs() { try { localStorage.setItem(PREFS_KEY, JSON.stringify(prefs)); } catch (e) {} }
+
+    function applyAll() {
+      root.setAttribute('data-theme', prefs.theme);
+      root.style.setProperty('--fs', prefs.fs + 'px');
+      root.style.setProperty('--lh', prefs.lh);
+      root.style.setProperty('--ls', prefs.ls);
+      var ff = prefs.ff === 'serif'
+        ? 'Georgia, "Noto Serif SC", "Source Han Serif SC", "SimSun", serif'
+        : '-apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif';
+      root.style.setProperty('--ff', ff);
+
+      document.querySelectorAll('[data-theme-btn]').forEach(function (b) {
+        b.classList.toggle('active', b.dataset.themeBtn === prefs.theme);
+      });
+      document.querySelectorAll('[data-lh]').forEach(function (b) {
+        b.classList.toggle('active', b.dataset.lh == prefs.lh);
+      });
+      document.querySelectorAll('[data-ls]').forEach(function (b) {
+        b.classList.toggle('active', b.dataset.ls == prefs.ls);
+      });
+      document.querySelectorAll('[data-ff]').forEach(function (b) {
+        b.classList.toggle('active', b.dataset.ff == prefs.ff);
+      });
+    }
+
+    // ===== 抽屉开关 =====
+    var fab = document.getElementById('a11y-fab');
+    var drawer = document.getElementById('a11y-drawer');
+    var backdrop = document.getElementById('drawer-backdrop');
+    var drawerOpen = false;
+    function openDrawer() {
+      drawer.classList.add('show'); backdrop.classList.add('show');
+      fab.classList.add('is-open'); fab.setAttribute('aria-expanded', 'true');
+      drawerOpen = true;
+      setTimeout(function(){ drawer.focus(); }, 100);
+    }
+    function closeDrawer() {
+      drawer.classList.remove('show'); backdrop.classList.remove('show');
+      fab.classList.remove('is-open'); fab.setAttribute('aria-expanded', 'false');
+      drawerOpen = false; fab.focus();
+    }
+    fab.addEventListener('click', function () { drawerOpen ? closeDrawer() : openDrawer(); });
+    document.getElementById('drawer-close').addEventListener('click', closeDrawer);
+    backdrop.addEventListener('click', closeDrawer);
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && drawerOpen) { e.preventDefault(); closeDrawer(); }
+    });
+
+    // ===== 无障碍操作 =====
+    document.getElementById('fs-inc').addEventListener('click', function () {
+      prefs.fs = Math.min(prefs.fs + 2, 28); savePrefs(); applyAll();
+    });
+    document.getElementById('fs-dec').addEventListener('click', function () {
+      prefs.fs = Math.max(prefs.fs - 2, 14); savePrefs(); applyAll();
+    });
+    document.querySelectorAll('[data-theme-btn]').forEach(function (b) {
+      b.addEventListener('click', function () { prefs.theme = b.dataset.themeBtn; savePrefs(); applyAll(); });
+    });
+    document.querySelectorAll('[data-lh]').forEach(function (b) {
+      b.addEventListener('click', function () { prefs.lh = parseFloat(b.dataset.lh); savePrefs(); applyAll(); });
+    });
+    document.querySelectorAll('[data-ls]').forEach(function (b) {
+      b.addEventListener('click', function () { prefs.ls = b.dataset.ls; savePrefs(); applyAll(); });
+    });
+    document.querySelectorAll('[data-ff]').forEach(function (b) {
+      b.addEventListener('click', function () { prefs.ff = b.dataset.ff; savePrefs(); applyAll(); });
+    });
+    document.getElementById('reset-btn').addEventListener('click', function () {
+      prefs = Object.assign({}, defaults); savePrefs(); applyAll();
+    });
+    document.getElementById('print-btn').addEventListener('click', function () { window.print(); });
+
+    // 朗读
+    var ttsBtn = document.getElementById('tts-btn');
+    var ttsLabel = ttsBtn.querySelector('span');
+    var speaking = false;
+    ttsBtn.addEventListener('click', function () {
+      if (speaking) {
+        speechSynthesis.cancel();
+        speaking = false; ttsBtn.classList.remove('active'); ttsBtn.setAttribute('aria-pressed', 'false');
+        ttsLabel.textContent = t('tts');
+        return;
+      }
+      var article = document.getElementById('content');
+      var text = article.innerText.trim();
+      if (!text || text === t('loading')) return;
+      var u = new SpeechSynthesisUtterance(text);
+      u.lang = lang === 'en' ? 'en-US' : 'zh-CN'; u.rate = 1.0;
+      u.onend = function () {
+        speaking = false; ttsBtn.classList.remove('active'); ttsBtn.setAttribute('aria-pressed', 'false');
+        ttsLabel.textContent = t('tts');
+      };
+      u.onerror = u.onend;
+      speechSynthesis.speak(u);
+      speaking = true; ttsBtn.classList.add('active'); ttsBtn.setAttribute('aria-pressed', 'true');
+      ttsLabel.textContent = t('tts_stop');
+    });
+
+    // 阅读进度
+    var progress = document.getElementById('progress');
+    function updateProgress() {
+      var h = document.documentElement;
+      var scrolled = h.scrollTop;
+      var total = h.scrollHeight - h.clientHeight;
+      var pct = total > 0 ? Math.round(scrolled / total * 100) : 0;
+      progress.style.width = pct + '%';
+      progress.setAttribute('aria-valuenow', pct);
+    }
+    window.addEventListener('scroll', updateProgress, { passive: true });
+    updateProgress();
+
+    // ===== 加载内容（双语） =====
+    function loadContent() {
+      var contentEl = document.getElementById('content');
+      contentEl.innerHTML = '<div class="empty-state">' + t('loading') + '</div>';
+      var url = '/api/agreement' + (lang === 'en' ? '?lang=en' : '');
+      fetch(url).then(function (r) { return r.json(); }).then(function (data) {
+        var titleEl = document.getElementById('doc-title');
+        var titleKey = lang === 'en' ? 'titleEn' : 'title';
+        var contentKey = lang === 'en' ? 'contentEn' : 'content';
+        var title = data[titleKey] || data.title || t('title');
+        var content = data[contentKey] != null ? data[contentKey] : data.content;
+
+        titleEl.textContent = title;
+        document.title = title;
+
+        if (content && String(content).trim()) {
+          contentEl.innerHTML = String(content);
+          if (data.updatedAt) {
+            var d = new Date(data.updatedAt);
+            var footer = document.createElement('div');
+            footer.className = 'updated';
+            footer.textContent = t('updated') + '：' + d.toLocaleDateString(lang === 'en' ? 'en-US' : 'zh-CN') + ' ' + d.toLocaleTimeString(lang === 'en' ? 'en-US' : 'zh-CN', { hour: '2-digit', minute: '2-digit' });
+            contentEl.appendChild(footer);
+          }
+        } else {
+          contentEl.innerHTML = '<div class="empty-state">' + t('empty') + '</div>';
+        }
+        updateProgress();
+      }).catch(function () {
+        document.getElementById('content').innerHTML = '<div class="empty-state">' + t('loadfail') + '</div>';
+      });
+    }
+
+    applyLang();
+    applyAll();
+    loadContent();
+  })();
+  </script>
+</body>
+</html>

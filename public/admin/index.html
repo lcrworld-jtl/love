@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Love - 管理</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .admin-body { background: var(--bg); }
+    .admin-container { max-width: 700px; margin: 0 auto; padding: 20px 16px 60px; }
+    .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+    .admin-header h1 { font-size: 22px; color: var(--primary); }
+    .btn { padding: 8px 20px; border-radius: 20px; border: none; font-size: 14px; cursor: pointer; transition: all 0.2s; }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover { background: var(--primary-dark); }
+    .btn-danger { background: #ff4757; color: #fff; }
+    .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-secondary); }
+    .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+    .login-box { max-width: 360px; margin: 80px auto; text-align: center; }
+    .login-box h2 { color: var(--primary); margin-bottom: 20px; }
+    .login-box input { width: 100%; padding: 12px 16px; border: 1px solid var(--border); border-radius: 12px; font-size: 16px; margin-bottom: 16px; box-sizing: border-box; }
+    .login-box input:focus { outline: none; border-color: var(--primary); }
+    .section-editor { background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 16px; }
+    .section-editor-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .section-editor-title { font-weight: 700; color: var(--primary-dark); font-size: 16px; }
+    .field { margin-bottom: 12px; }
+    .field label { display: block; font-size: 13px; color: var(--text-secondary); margin-bottom: 4px; }
+    .field input, .field textarea, .field select { width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: 10px; font-size: 14px; font-family: inherit; box-sizing: border-box; }
+    .field input:focus, .field textarea:focus { outline: none; border-color: var(--primary); }
+    .field textarea { min-height: 150px; resize: vertical; line-height: 1.8; }
+    .quant-editor { border-top: 1px solid var(--border); padding-top: 12px; margin-top: 12px; }
+    .quant-row { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
+    .quant-row input { padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; }
+    .quant-row .q-name { flex: 2; }
+    .quant-row .q-weight { flex: 1; }
+    .quant-row .q-desc { flex: 3; }
+    .quant-row .q-del { flex-shrink: 0; width: 32px; height: 32px; border: none; background: #fff0f0; color: #ff4757; border-radius: 8px; cursor: pointer; font-size: 16px; }
+    .add-btn { display: inline-block; padding: 6px 14px; border: 1px dashed var(--primary); color: var(--primary); border-radius: 8px; font-size: 13px; cursor: pointer; background: transparent; }
+    .save-bar { position: sticky; bottom: 0; background: var(--bg); padding: 12px 0; display: flex; gap: 12px; justify-content: flex-end; }
+    .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: var(--primary); color: #fff; padding: 10px 24px; border-radius: 20px; font-size: 14px; z-index: 999; opacity: 0; transition: opacity 0.3s; }
+    .toast.show { opacity: 1; }
+    /* Tab 导航 */
+    .admin-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 20px; padding: 6px; background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border); }
+    .admin-tab { padding: 8px 14px; border-radius: 8px; font-size: 13px; cursor: pointer; color: var(--text-secondary); border: none; background: transparent; transition: all 0.2s; }
+    .admin-tab:hover { color: var(--primary); }
+    .admin-tab.active { background: var(--primary); color: #fff; }
+    /* 列表卡片 */
+    .list-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin-bottom: 10px; }
+    .list-card.pending { border-left: 3px solid #ffa500; }
+    .list-card.approved { border-left: 3px solid #4caf50; }
+    .list-card-head { display: flex; justify-content: space-between; align-items: start; gap: 10px; margin-bottom: 6px; }
+    .list-card-title { font-weight: 600; color: var(--primary-dark); font-size: 14px; }
+    .list-card-meta { font-size: 12px; color: var(--text-secondary); }
+    .list-card-body { font-size: 14px; color: var(--text); line-height: 1.6; margin: 6px 0; }
+    .list-card-actions { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+    .list-card-actions .btn { padding: 4px 12px; font-size: 12px; }
+    /* 统计卡片 */
+    .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 16px; }
+    .stats-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 16px; text-align: center; }
+    .stats-num { font-size: 28px; font-weight: 700; color: var(--primary); }
+    .stats-label { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
+    .stats-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+    .stats-row:last-child { border-bottom: none; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; }
+    .badge-pending { background: #fff3e0; color: #e65100; }
+    .badge-approved { background: #e8f5e9; color: #2e7d32; }
+    .empty-hint { text-align: center; color: var(--text-secondary); padding: 30px; font-size: 14px; }
+  </style>
+</head>
+<body class="admin-body">
+  <div id="admin-root"></div>
+  <div class="toast" id="toast"></div>
+  <script src="/admin/admin.js"></script>
+</body>
+</html>

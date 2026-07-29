@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>时间胶囊 · Love</title>
+  <meta name="description" content="写给未来的信，到期才能开启。把此刻想说的话封存，让时间替你保管，到约定那一天再相见。">
+  <meta name="keywords" content="时间胶囊,写给未来,时光信件,恋爱,浪漫,Love">
+  <meta name="author" content="Love">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://love.lcrworld.xyz/capsule">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⏳</text></svg>">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#FF6B9D">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⏳</text></svg>">
+  <link rel="preconnect" href="https://love.lcrworld.xyz">
+  <link rel="stylesheet" href="/css/style.css">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Love">
+  <meta property="og:title" content="时间胶囊 · Love">
+  <meta property="og:description" content="写给未来的信，到期才能开启。把此刻想说的话封存，让时间替你保管。">
+  <meta property="og:url" content="https://love.lcrworld.xyz/capsule">
+  <meta property="og:locale" content="zh_CN">
+  <meta property="og:image" content="https://love.lcrworld.xyz/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="时间胶囊 · Love">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="时间胶囊 · Love">
+  <meta name="twitter:description" content="写给未来的信，到期才能开启。把此刻想说的话封存，让时间替你保管。">
+  <meta name="twitter:image" content="https://love.lcrworld.xyz/og-image.png">
+
+  <!-- 结构化数据 -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://love.lcrworld.xyz/" },
+      { "@type": "ListItem", "position": 2, "name": "时间胶囊", "item": "https://love.lcrworld.xyz/capsule" }
+    ]
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "@id": "https://love.lcrworld.xyz/capsule#webpage",
+    "url": "https://love.lcrworld.xyz/capsule",
+    "name": "时间胶囊 · Love",
+    "description": "写给未来的信，到期才能开启。把此刻想说的话封存，让时间替你保管，到约定那一天再相见。",
+    "isPartOf": { "@id": "https://love.lcrworld.xyz/#website" },
+    "inLanguage": "zh-CN"
+  }
+  </script>
+</head>
+<body data-page="capsule">
+  <noscript><div style="padding:16px;text-align:center;background:#fff0f0;color:#c00;font-size:14px">请开启 JavaScript 以获得最佳浏览体验。</div></noscript>
+  <canvas id="sakura-canvas"></canvas>
+  <canvas id="effect-canvas"></canvas>
+
+  <div id="app">
+    <header class="hero">
+      <div class="hero-inner">
+        <h1 class="title">时间胶囊</h1>
+        <p class="subtitle">写给未来的信</p>
+        <div class="hero-scroll-hint">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+      </div>
+    </header>
+
+    <main class="main" id="content">
+      <!-- 创建胶囊表单 -->
+      <div class="section">
+        <div class="card">
+          <div class="card-title">
+            <svg viewBox="0 0 24 24" fill="currentColor" style="width:20px;height:20px"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"/><path d="M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+            <span>埋下一颗胶囊</span>
+          </div>
+          <div class="capsule-form">
+            <div class="form-row">
+              <label>来自</label>
+              <input type="text" id="cap-from" placeholder="你的名字（选填）" maxlength="30">
+            </div>
+            <div class="form-row">
+              <label>致</label>
+              <input type="text" id="cap-to" placeholder="未来的谁（选填）" maxlength="30">
+            </div>
+            <div class="form-row">
+              <label>解锁时间</label>
+              <input type="datetime-local" id="cap-unlock">
+            </div>
+            <div class="form-row">
+              <label>胶囊内容</label>
+              <textarea id="cap-content" placeholder="写下你想留给未来的话..." rows="6" maxlength="5000"></textarea>
+            </div>
+            <button class="capsule-submit" id="cap-submit">封存这颗胶囊</button>
+            <div class="form-tip" id="cap-result"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 已解锁的胶囊 -->
+      <div class="section">
+        <div class="card">
+          <div class="card-title">
+            <svg viewBox="0 0 24 24" fill="currentColor" style="width:20px;height:20px"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+            <span>星河里的胶囊</span>
+          </div>
+          <div id="cap-opened"></div>
+        </div>
+      </div>
+
+      <footer class="site-footer">
+        <div class="footer-divider"></div>
+        <details class="footer-collapse">
+          <summary>更多页面</summary>
+          <div class="footer-links">
+            <a href="/" class="footer-link">首页</a>
+            <a href="/lover" class="footer-link">特别的人</a>
+            <a href="/stars" class="footer-link">星空许愿</a>
+            <a href="/anniversary" class="footer-link">纪念日</a>
+            <a href="/gallery" class="footer-link">照片墙</a>
+            <a href="/bucket-list" class="footer-link">愿望清单</a>
+            <a href="/agreement" class="footer-link">君子协定</a>
+          </div>
+        </details>
+        <div class="footer-icp">
+          <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer">冀ICP备2026028241号</a>
+        </div>
+      </footer>
+    </main>
+  </div>
+
+  <button class="back-top" id="back-top">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+  </button>
+
+  <script src="/js/common.js"></script>
+  <script src="/js/sakura.js"></script>
+  <script src="/js/click-effect.js"></script>
+  <script src="/js/music-player.js"></script>
+  <script src="/js/capsule.js"></script>
+</body>
+</html>

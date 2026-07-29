@@ -1,0 +1,67 @@
+{
+  "title": "Love",
+  "subtitle": "在这里写一句副标题",
+  "sections": [
+    {
+      "id": "philosophy",
+      "title": "我的恋爱观",
+      "icon": "heart",
+      "content": "在这里写下你的恋爱观。"
+    },
+    {
+      "id": "quantification",
+      "title": "好感量化表",
+      "icon": "chart",
+      "type": "quantification",
+      "content": "",
+      "items": [
+        { "name": "第一眼感觉", "weight": 15, "desc": "看到的第一反应，直觉很重要" },
+        { "name": "聊天舒适度", "weight": 30, "desc": "能不能聊到一起，有没有尴尬的沉默" },
+        { "name": "价值观匹配", "weight": 20, "desc": "对事情的看法是否一致，能不能互相理解" },
+        { "name": "性格互补", "weight": 5, "desc": "不是要一样，而是要互补" },
+        { "name": "外在条件", "weight": 5, "desc": "不是最重要的，但确实是加分项" },
+        { "name": "共同话题", "weight": 25, "desc": "有没有共同感兴趣的事情可以一起做" }
+      ]
+    },
+    {
+      "id": "rules",
+      "title": "我的原则",
+      "icon": "star",
+      "content": "在这里写下你的原则。"
+    },
+    {
+      "id": "thoughts",
+      "title": "碎碎念",
+      "icon": "feather",
+      "content": "在这里写下你想说的话。"
+    },
+    {
+      "id": "wife",
+      "title": "特别的人",
+      "icon": "heart",
+      "type": "role",
+      "role": "恋人",
+      "occupied": false,
+      "person": "",
+      "message": "虚位以待",
+      "avatar": "",
+      "expectations": ["你不用多好，我喜欢就好。"],
+      "sinceDate": "",
+      "gender": "",
+      "zodiac": "",
+      "birthDate": "",
+      "classInfo": "",
+      "hobbies": "",
+      "timeline": [],
+      "album": []
+    },
+    {
+      "id": "articles",
+      "title": "文章",
+      "icon": "book",
+      "type": "links",
+      "content": "",
+      "items": []
+    }
+  ]
+}
