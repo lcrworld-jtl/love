@@ -1771,100 +1771,211 @@ body {
   line-height: 1.6;
 }
 
-/* 相册 */
-.album-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
-}
-
-.album-item {
+/* ===== 恋爱相册（跑马灯轮播） ===== */
+.album-carousel {
   position: relative;
-  border-radius: 12px;
   overflow: hidden;
+  border-radius: 14px;
   background: #FFF5F7;
   border: 1px solid var(--border);
+}
+
+.album-track {
+  display: flex;
+  transition: transform 0.5s cubic-bezier(0.25, 0.1, 0.25, 1);
+  will-change: transform;
+}
+
+.album-slide {
+  flex: 0 0 100%;
+  position: relative;
   cursor: pointer;
-  transition: transform 0.2s;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.album-item:active {
-  transform: scale(0.97);
-}
-
-.album-item img {
+.album-slide img {
   display: block;
   width: 100%;
-  aspect-ratio: 1;
+  aspect-ratio: 4/3;
   object-fit: cover;
   background: var(--primary-light);
 }
 
 .album-desc {
-  padding: 8px 12px;
-  font-size: 12px;
+  padding: 10px 14px;
+  font-size: 13px;
   color: var(--text-secondary);
   text-align: center;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  background: rgba(255,255,255,0.8);
 }
 
-/* 相册大图查看器 */
+/* 圆点指示器 */
+.album-dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 0;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 2;
+}
+
+.album-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.2);
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.album-dot.active {
+  width: 24px;
+  border-radius: 4px;
+  background: var(--primary);
+}
+
+/* ===== 相册大图查看器 ===== */
 .album-viewer {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.88);
   z-index: 200;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 20px;
-  opacity: 0;
   pointer-events: none;
-  transition: opacity 0.25s;
+  opacity: 0;
+  transition: opacity 0.3s;
 }
 
 .album-viewer.show {
-  opacity: 1;
   pointer-events: auto;
+  opacity: 1;
+}
+
+.album-viewer-bg {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.album-viewer-stage {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  overflow: hidden;
+  padding: 20px;
 }
 
 .album-viewer-img {
-  max-width: 92%;
-  max-height: 80vh;
+  max-width: 92vw;
+  max-height: 75vh;
   border-radius: 10px;
   box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+  transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1), transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  opacity: 1;
+  transform: scale(1);
 }
 
 .album-viewer-desc {
+  position: relative;
+  z-index: 1;
   color: #fff;
-  font-size: 14px;
-  margin-top: 16px;
+  font-size: 15px;
+  margin-top: 10px;
   text-align: center;
   opacity: 0.9;
+  padding: 0 20px;
+  max-width: 80vw;
 }
 
-.album-viewer-close {
+.album-viewer-counter {
+  position: relative;
+  z-index: 1;
+  color: rgba(255,255,255,0.5);
+  font-size: 13px;
+  margin-top: 6px;
+  letter-spacing: 1px;
+}
+
+/* 导航按钮 */
+.album-viewer-nav {
   position: absolute;
-  top: 20px;
-  right: 20px;
-  width: 40px;
-  height: 40px;
+  top: 50%;
+  z-index: 2;
+  width: 44px;
+  height: 44px;
   border: none;
-  background: rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.12);
   color: #fff;
   border-radius: 50%;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.2s;
+  transition: background 0.2s, transform 0.2s;
+  transform: translateY(-50%);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.album-viewer-nav:hover {
+  background: rgba(255,255,255,0.25);
+  transform: translateY(-50%) scale(1.08);
+}
+
+.album-viewer-nav:active {
+  transform: translateY(-50%) scale(0.95);
+}
+
+.album-viewer-nav svg {
+  width: 22px;
+  height: 22px;
+}
+
+.album-viewer-prev {
+  left: 12px;
+}
+
+.album-viewer-next {
+  right: 12px;
+}
+
+/* 关闭按钮 */
+.album-viewer-close {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  z-index: 2;
+  width: 40px;
+  height: 40px;
+  border: none;
+  background: rgba(255,255,255,0.12);
+  color: #fff;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, transform 0.2s;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
 }
 
 .album-viewer-close:hover {
   background: rgba(255,255,255,0.3);
+  transform: rotate(90deg);
 }
 
 .album-viewer-close svg {

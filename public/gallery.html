@@ -308,6 +308,94 @@
       body[data-page="gallery"] h1.gallery-title { font-size: 24px; }
       body[data-page="gallery"] .lightbox-nav { width: 40px; height: 40px; }
     }
+
+    /* ===== 过渡动画 ===== */
+    @keyframes galleryFadeIn {
+      from { opacity: 0; transform: translateY(24px) scale(0.96); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    @keyframes galleryFadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes galleryPopIn {
+      from { opacity: 0; transform: scale(0.85); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+    @keyframes lightboxOverlayIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+    @keyframes lightboxOverlayOut {
+      from { opacity: 1; }
+      to   { opacity: 0; }
+    }
+    @keyframes lightboxImgIn {
+      from { opacity: 0; transform: scale(0.92); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+    @keyframes lightboxImgOut {
+      from { opacity: 1; transform: scale(1); }
+      to   { opacity: 0; transform: scale(0.92); }
+    }
+    @keyframes slideInRight {
+      from { opacity: 0; transform: translateX(40px) scale(0.95); }
+      to   { opacity: 1; transform: translateX(0) scale(1); }
+    }
+    @keyframes slideInLeft {
+      from { opacity: 0; transform: translateX(-40px) scale(0.95); }
+      to   { opacity: 1; transform: translateX(0) scale(1); }
+    }
+
+    .gallery-animate-fade {
+      animation: galleryFadeIn 0.5s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+    }
+    .gallery-animate-up {
+      animation: galleryFadeUp 0.5s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+    }
+    .gallery-animate-pop {
+      animation: galleryPopIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    }
+
+    /* 大图查看器过渡 */
+    body[data-page="gallery"] .lightbox {
+      transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    body[data-page="gallery"] .lightbox:not(.show) {
+      opacity: 0; pointer-events: none;
+    }
+    body[data-page="gallery"] .lightbox.show {
+      opacity: 1;
+    }
+    body[data-page="gallery"] .lightbox-img-wrap {
+      position: relative;
+      display: flex; align-items: center; justify-content: center;
+      width: 90vw; height: 78vh;
+    }
+    body[data-page="gallery"] .lightbox-img-wrap img {
+      position: absolute;
+      max-width: 100%; max-height: 100%;
+      border-radius: 8px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+      transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1), transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    body[data-page="gallery"] .lightbox-img-wrap img.lb-enter {
+      opacity: 0; transform: scale(0.92);
+    }
+    body[data-page="gallery"] .lightbox-img-wrap img.lb-enter-active {
+      opacity: 1; transform: scale(1);
+    }
+    body[data-page="gallery"] .lightbox-img-wrap img.lb-exit {
+      opacity: 0; transform: scale(0.92);
+    }
+
+    /* 视图切换时容器过渡 */
+    body[data-page="gallery"] #gallery-container {
+      transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    body[data-page="gallery"] #gallery-container.view-changing {
+      opacity: 0;
+    }
   </style>
 </head>
 <body data-page="gallery">
@@ -339,7 +427,9 @@
     <button class="lightbox-close" id="lightbox-close">×</button>
     <div class="lightbox-counter" id="lightbox-counter"></div>
     <button class="lightbox-nav prev" id="lb-prev">‹</button>
-    <img id="lightbox-img" src="" alt="照片预览">
+    <div class="lightbox-img-wrap" id="lightbox-img-wrap">
+      <img id="lightbox-img" src="" alt="照片预览">
+    </div>
     <button class="lightbox-nav next" id="lb-next">›</button>
     <div class="lightbox-meta">
       <div class="lb-caption" id="lb-caption"></div>

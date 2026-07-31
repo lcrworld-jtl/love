@@ -11,6 +11,7 @@
   let carouselIdx = 0;
   let carouselTimer = null;
   let lightboxIdx = 0;
+  let isAnimating = false;
 
   function esc(t) {
     const d = document.createElement('div');
@@ -41,6 +42,45 @@
     `;
   }
 
+  // ===== 入场动画辅助 =====
+  // 给 items 添加交错渐入动画
+  function animateItems(container, selector, animClass, stagger = 80) {
+    const items = container.querySelectorAll(selector);
+    items.forEach((el, i) => {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(20px)';
+      el.style.transition = `opacity 0.45s cubic-bezier(0.22, 0.61, 0.36, 1) ${i * stagger}ms, transform 0.45s cubic-bezier(0.22, 0.61, 0.36, 1) ${i * stagger}ms`;
+      requestAnimationFrame(() => {
+        el.style.opacity = '1';
+        el.style.transform = 'translateY(0)';
+      });
+    });
+  }
+
+  // ===== 视图切换（带淡出→淡入过渡） =====
+  function switchView(view) {
+    if (view === currentView) return;
+    currentView = view;
+    document.querySelectorAll('#view-switch button').forEach(b => {
+      b.classList.toggle('active', b.dataset.view === view);
+    });
+    // 清理旋转木马定时器
+    if (carouselTimer) { clearInterval(carouselTimer); carouselTimer = null; }
+
+    const container = document.getElementById('gallery-container');
+    // 先淡出
+    container.classList.add('view-changing');
+    setTimeout(() => {
+      if (view === 'masonry') renderMasonry(container);
+      else if (view === 'carousel') renderCarousel(container);
+      else if (view === 'grid') renderGrid(container);
+      // 再淡入
+      requestAnimationFrame(() => {
+        container.classList.remove('view-changing');
+      });
+    }, 280);
+  }
+
   // ===== 视图 1：瀑布流 =====
   function renderMasonry(container) {
     const list = sortedPhotos();
@@ -49,7 +89,7 @@
       <div class="masonry">
         ${list.map((p, i) => `
           <div class="masonry-item" data-idx="${i}">
-            <img src="${imgUrl(p.filename)}" alt="${esc(p.caption)}" loading="lazy">
+            <img src="${imgUrl(p.filename)}" alt="${esc(p.caption)}" loading="lazy" style="transition: transform 0.4s cubic-bezier(0.22, 0.61, 0.36, 1)">
             <div class="masonry-caption">
               ${p.caption ? `<div class="mc-text">${esc(p.caption)}</div>` : ''}
               <div class="mc-date">${esc(p.date || '')}</div>
@@ -59,6 +99,8 @@
       </div>
     `;
     bindClicks(container);
+    // 交错渐入动画
+    animateItems(container, '.masonry-item', 'gallery-animate-fade', 80);
   }
 
   // ===== 视图 2：3D 旋转木马 =====
@@ -66,7 +108,7 @@
     const list = sortedPhotos();
     if (!list.length) return renderEmpty(container);
     container.innerHTML = `
-      <div class="carousel-wrap">
+      <div class="carousel-wrap" style="opacity:0;transform:translateY(20px);transition:opacity 0.5s ease,transform 0.5s ease">
         <button class="carousel-nav prev" id="cr-prev">‹</button>
         <div class="carousel" id="carousel"></div>
         <button class="carousel-nav next" id="cr-next">›</button>
@@ -94,14 +136,12 @@
     function layout() {
       const items = carousel.querySelectorAll('.carousel-item');
       const angleStep = 360 / n;
-      // 圆环半径根据数量动态调整
       const radius = Math.max(220, n * 50);
       items.forEach((el, i) => {
-        // 每个 item 相对当前位置 i - carouselIdx 的角度
         const angle = (i - carouselIdx) * angleStep;
+        el.style.transition = 'transform 0.6s cubic-bezier(0.22, 0.61, 0.36, 1)';
         el.style.transform = `rotateY(${angle}deg) translateZ(${radius}px)`;
       });
-      // 更新圆点
       dots.querySelectorAll('.dot').forEach((d, i) => {
         d.classList.toggle('active', i === carouselIdx);
       });
@@ -138,6 +178,15 @@
 
     layout();
     startAuto();
+
+    // 旋转木马入场动画
+    requestAnimationFrame(() => {
+      const wrap = container.querySelector('.carousel-wrap');
+      if (wrap) {
+        wrap.style.opacity = '1';
+        wrap.style.transform = 'translateY(0)';
+      }
+    });
   }
 
   // ===== 视图 3：拼贴网格 =====
@@ -158,6 +207,8 @@
       </div>
     `;
     bindClicks(container);
+    // 交错弹入动画
+    animateItems(container, '.grid-item', 'gallery-animate-pop', 60);
   }
 
   function bindClicks(container) {
@@ -168,53 +219,102 @@
     });
   }
 
-  // ===== 大图查看器 =====
+  // ===== 大图查看器（带过渡动画） =====
   function openLightbox(idx) {
     const list = sortedPhotos();
     if (!list.length) return;
     lightboxIdx = ((idx % list.length) + list.length) % list.length;
     const lb = document.getElementById('lightbox');
-    lb.classList.add('show');
-    updateLightbox();
+    // 设置初始状态
+    lb.style.display = 'flex';
+    lb.style.opacity = '0';
+    // 图片先隐藏
+    const img = document.getElementById('lightbox-img');
+    img.style.opacity = '0';
+    img.style.transform = 'scale(0.92)';
+    img.src = imgUrl(list[lightboxIdx].filename);
+    // 更新 meta
+    document.getElementById('lb-caption').textContent = list[lightboxIdx].caption || '';
+    document.getElementById('lb-date').textContent = list[lightboxIdx].date || '';
+    document.getElementById('lightbox-counter').textContent = `${lightboxIdx + 1} / ${list.length}`;
+    // 触发淡入
+    requestAnimationFrame(() => {
+      lb.style.opacity = '1';
+      img.style.opacity = '1';
+      img.style.transform = 'scale(1)';
+    });
+    // 等过渡完成后加 show class 以便键盘事件
+    setTimeout(() => {
+      lb.classList.add('show');
+    }, 350);
   }
 
   function closeLightbox() {
-    document.getElementById('lightbox').classList.remove('show');
+    const lb = document.getElementById('lightbox');
+    const img = document.getElementById('lightbox-img');
+    lb.classList.remove('show');
+    // 淡出动画
+    img.style.opacity = '0';
+    img.style.transform = 'scale(0.92)';
+    lb.style.opacity = '0';
+    setTimeout(() => {
+      lb.style.display = '';
+    }, 350);
   }
 
-  function updateLightbox() {
+  function updateLightbox(direction) {
     const list = sortedPhotos();
     const p = list[lightboxIdx];
     if (!p) return;
-    document.getElementById('lightbox-img').src = imgUrl(p.filename);
-    document.getElementById('lb-caption').textContent = p.caption || '';
-    document.getElementById('lb-date').textContent = p.date || '';
-    document.getElementById('lightbox-counter').textContent = `${lightboxIdx + 1} / ${list.length}`;
+    if (isAnimating) return;
+    isAnimating = true;
+
+    const img = document.getElementById('lightbox-img');
+    const caption = document.getElementById('lb-caption');
+    const date = document.getElementById('lb-date');
+    const counter = document.getElementById('lightbox-counter');
+
+    // 方向：1 = 下一张（从右滑入），-1 = 上一张（从左滑入）
+    const dir = direction || 0;
+
+    // 当前图片淡出 + 滑出
+    const exitTransform = dir > 0 ? 'translateX(-30px) scale(0.95)' : 'translateX(30px) scale(0.95)';
+    img.style.opacity = '0';
+    img.style.transform = exitTransform;
+
+    setTimeout(() => {
+      // 换图
+      img.src = imgUrl(p.filename);
+      caption.textContent = p.caption || '';
+      date.textContent = p.date || '';
+      counter.textContent = `${lightboxIdx + 1} / ${list.length}`;
+
+      // 新图从另一侧滑入
+      const enterTransform = dir > 0 ? 'translateX(30px) scale(0.95)' : 'translateX(-30px) scale(0.95)';
+      img.style.opacity = '0';
+      img.style.transform = enterTransform;
+
+      requestAnimationFrame(() => {
+        img.style.opacity = '1';
+        img.style.transform = 'translateX(0) scale(1)';
+      });
+
+      setTimeout(() => {
+        isAnimating = false;
+      }, 350);
+    }, 300);
   }
 
   function lightboxNext() {
     const list = sortedPhotos();
+    const prev = lightboxIdx;
     lightboxIdx = (lightboxIdx + 1) % list.length;
-    updateLightbox();
+    updateLightbox(1);
   }
   function lightboxPrev() {
     const list = sortedPhotos();
     lightboxIdx = (lightboxIdx - 1 + list.length) % list.length;
-    updateLightbox();
-  }
-
-  // ===== 视图切换 =====
-  function switchView(view) {
-    currentView = view;
-    document.querySelectorAll('#view-switch button').forEach(b => {
-      b.classList.toggle('active', b.dataset.view === view);
-    });
-    // 清理旋转木马定时器
-    if (carouselTimer) { clearInterval(carouselTimer); carouselTimer = null; }
-    const container = document.getElementById('gallery-container');
-    if (view === 'masonry') renderMasonry(container);
-    else if (view === 'carousel') renderCarousel(container);
-    else if (view === 'grid') renderGrid(container);
+    updateLightbox(-1);
   }
 
   function bindEvents() {
@@ -254,7 +354,8 @@
     if (!r) return;
     photos = r.photos || [];
     bindEvents();
-    switchView(currentView);
+    const container = document.getElementById('gallery-container');
+    renderMasonry(container);
   }
 
   load();

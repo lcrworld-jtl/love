@@ -89,6 +89,9 @@ function render() {
     main.appendChild(section);
   });
 
+  // 初始化相册跑马灯
+  initAlbumCarousel();
+
   // 每日情话
   renderDailyQuote();
 
@@ -423,54 +426,226 @@ function formatDateZh(dateStr) {
   return dateStr;
 }
 
-// ===== 恋爱相册 =====
+// ===== 恋爱相册（跑马灯轮播） =====
 function renderAlbum(sec) {
   const items = sec.album || [];
   if (!items.length) return '';
 
-  const itemsHtml = items.map(item => `
-    <div class="album-item">
-      <img src="${escapeHtml(item.url)}" alt="${escapeHtml(item.desc || '')}" loading="lazy" referrerpolicy="no-referrer" onclick="openAlbumViewer('${escapeHtml(item.url)}', '${escapeHtml((item.desc || '').replace(/'/g, ''))}')">
+  const itemsHtml = items.map((item, i) => `
+    <div class="album-slide" data-idx="${i}">
+      <img src="${escapeHtml(item.url)}" alt="${escapeHtml(item.desc || '')}" loading="lazy" referrerpolicy="no-referrer">
       ${item.desc ? `<div class="album-desc">${escapeHtml(item.desc)}</div>` : ''}
     </div>
+  `).join('');
+
+  const dotsHtml = items.map((_, i) => `
+    <div class="album-dot ${i === 0 ? 'active' : ''}" data-idx="${i}"></div>
   `).join('');
 
   return `
     <div class="role-section">
       <div class="role-section-title">${ICONS.heart}<span>恋爱相册</span></div>
-      <div class="album-grid">${itemsHtml}</div>
+      <div class="album-carousel" id="albumCarousel">
+        <div class="album-track" id="albumTrack">${itemsHtml}</div>
+        <div class="album-dots" id="albumDots">${dotsHtml}</div>
+      </div>
     </div>
   `;
 }
 
-// 相册大图查看
-function openAlbumViewer(url, desc) {
+// 初始化相册跑马灯
+function initAlbumCarousel() {
+  const track = document.getElementById('albumTrack');
+  const dots = document.getElementById('albumDots');
+  if (!track || !dots) return;
+
+  const slides = track.querySelectorAll('.album-slide');
+  const total = slides.length;
+  if (total <= 1) return;
+
+  let current = 0;
+  let timer = null;
+  let touchStartX = 0;
+  let touchStartY = 0;
+
+  function goTo(idx) {
+    current = idx;
+    track.style.transform = `translateX(-${current * 100}%)`;
+    dots.querySelectorAll('.album-dot').forEach((d, i) => {
+      d.classList.toggle('active', i === current);
+    });
+  }
+
+  function next() { goTo((current + 1) % total); }
+  function prev() { goTo((current - 1 + total) % total); }
+
+  function startAuto() {
+    stopAuto();
+    timer = setInterval(next, 3500);
+  }
+
+  function stopAuto() {
+    if (timer) { clearInterval(timer); timer = null; }
+  }
+
+  // 圆点点击
+  dots.querySelectorAll('.album-dot').forEach(d => {
+    d.addEventListener('click', () => {
+      goTo(Number(d.dataset.idx));
+      startAuto();
+    });
+  });
+
+  // 点击图片打开大图查看器
+  slides.forEach((slide, i) => {
+    slide.addEventListener('click', () => {
+      openAlbumViewer(i);
+      stopAuto();
+    });
+  });
+
+  // 触屏滑动
+  track.addEventListener('touchstart', (e) => {
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+    stopAuto();
+  }, { passive: true });
+
+  track.addEventListener('touchend', (e) => {
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    const dy = e.changedTouches[0].clientY - touchStartY;
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
+      if (dx < 0) next();
+      else prev();
+    }
+    startAuto();
+  }, { passive: true });
+
+  // 鼠标悬停暂停
+  track.addEventListener('mouseenter', stopAuto);
+  track.addEventListener('mouseleave', startAuto);
+
+  // 键盘左右切换
+  document.addEventListener('keydown', function albumKey(e) {
+    const carousel = document.getElementById('albumCarousel');
+    if (!carousel) return;
+    const rect = carousel.getBoundingClientRect();
+    const visible = rect.top < window.innerHeight && rect.bottom > 0;
+    if (!visible) return;
+    if (e.key === 'ArrowLeft') { prev(); startAuto(); }
+    if (e.key === 'ArrowRight') { next(); startAuto(); }
+  });
+
+  startAuto();
+}
+
+// 相册大图查看器（带缩放过渡 + 左右切换 + 手势）
+let albumViewerIdx = 0;
+let albumViewerItems = [];
+
+function openAlbumViewer(idx) {
+  const carousel = document.getElementById('albumCarousel');
+  if (!carousel) return;
+  const slides = carousel.querySelectorAll('.album-slide');
+  albumViewerItems = [];
+  albumViewerIdx = idx;
+  slides.forEach(s => {
+    const img = s.querySelector('img');
+    const desc = s.querySelector('.album-desc');
+    albumViewerItems.push({
+      url: img ? img.src : '',
+      desc: desc ? desc.textContent : ''
+    });
+  });
+
   let viewer = document.getElementById('album-viewer');
   if (!viewer) {
     viewer = document.createElement('div');
     viewer.id = 'album-viewer';
     viewer.className = 'album-viewer';
     viewer.innerHTML = `
+      <div class="album-viewer-bg"></div>
       <button class="album-viewer-close" aria-label="关闭">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
-      <img class="album-viewer-img">
+      <button class="album-viewer-nav album-viewer-prev" aria-label="上一张">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15,18 9,12 15,6"/></svg>
+      </button>
+      <button class="album-viewer-nav album-viewer-next" aria-label="下一张">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9,18 15,12 9,6"/></svg>
+      </button>
+      <div class="album-viewer-stage">
+        <img class="album-viewer-img">
+      </div>
       <div class="album-viewer-desc"></div>
+      <div class="album-viewer-counter"></div>
     `;
     document.body.appendChild(viewer);
+
     viewer.querySelector('.album-viewer-close').addEventListener('click', closeAlbumViewer);
-    viewer.addEventListener('click', (e) => {
-      if (e.target === viewer) closeAlbumViewer();
-    });
+    viewer.querySelector('.album-viewer-prev').addEventListener('click', () => viewerNav(-1));
+    viewer.querySelector('.album-viewer-next').addEventListener('click', () => viewerNav(1));
+
+    // 点击背景关闭
+    viewer.querySelector('.album-viewer-bg').addEventListener('click', closeAlbumViewer);
+
+    // 键盘
+    document.addEventListener('keydown', viewerKeyHandler);
+
+    // 触屏滑动
+    let vTouchX = 0;
+    viewer.addEventListener('touchstart', (e) => {
+      vTouchX = e.touches[0].clientX;
+    }, { passive: true });
+    viewer.addEventListener('touchend', (e) => {
+      const dx = e.changedTouches[0].clientX - vTouchX;
+      if (Math.abs(dx) > 50) viewerNav(dx < 0 ? 1 : -1);
+    }, { passive: true });
   }
-  viewer.querySelector('img').src = url;
-  viewer.querySelector('.album-viewer-desc').textContent = desc || '';
+
+  updateViewer();
   viewer.classList.add('show');
+}
+
+function viewerNav(dir) {
+  albumViewerIdx = (albumViewerIdx + dir + albumViewerItems.length) % albumViewerItems.length;
+  updateViewer();
+}
+
+function updateViewer() {
+  const viewer = document.getElementById('album-viewer');
+  if (!viewer) return;
+  const item = albumViewerItems[albumViewerIdx];
+  if (!item) return;
+
+  const img = viewer.querySelector('.album-viewer-img');
+  // 淡入动画：先隐藏，换 src，再显示
+  img.style.opacity = '0';
+  img.style.transform = 'scale(0.92)';
+  setTimeout(() => {
+    img.src = item.url;
+    img.style.opacity = '1';
+    img.style.transform = 'scale(1)';
+  }, 150);
+
+  viewer.querySelector('.album-viewer-desc').textContent = item.desc || '';
+  viewer.querySelector('.album-viewer-counter').textContent = `${albumViewerIdx + 1} / ${albumViewerItems.length}`;
+}
+
+function viewerKeyHandler(e) {
+  const viewer = document.getElementById('album-viewer');
+  if (!viewer || !viewer.classList.contains('show')) return;
+  if (e.key === 'Escape') closeAlbumViewer();
+  else if (e.key === 'ArrowLeft') viewerNav(-1);
+  else if (e.key === 'ArrowRight') viewerNav(1);
 }
 
 function closeAlbumViewer() {
   const viewer = document.getElementById('album-viewer');
-  if (viewer) viewer.classList.remove('show');
+  if (viewer) {
+    viewer.classList.remove('show');
+    document.removeEventListener('keydown', viewerKeyHandler);
+  }
 }
 
 // ===== Application form =====
