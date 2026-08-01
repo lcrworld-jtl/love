@@ -160,6 +160,17 @@ server {
 - **PWA**：Service Worker + Web App Manifest
 - **存储**：JSON 文件（无需数据库）
 
+## 🙏 开源致谢
+
+### 星空许愿
+
+星空许愿页面的粒子星云算法参考了以下开源项目：
+
+- **[z2586300277/three-cesium-examples](https://github.com/z2586300277/three-cesium-examples)**（Apache License 2.0）— 15 万粒子星云生成算法、GLSL 粒子流动着色器，均参考自该项目的 `PlanetParticle.html` 示例
+- **[Three.js 官方示例 — Planets/Atmosphere](https://threejs.org/examples/Planets/Atmosphere.html)**（MIT）— 行星大气层光晕的 Fresnel Shader 算法参考
+
+感谢这些项目的作者，让这片星河得以闪耀。
+
 ## 📄 开源协议
 
 [MIT License](./LICENSE)
