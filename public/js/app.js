@@ -426,7 +426,7 @@ function formatDateZh(dateStr) {
   return dateStr;
 }
 
-// ===== 恋爱相册（跑马灯轮播） =====
+// ===== 恋爱相册（网格并列排列） =====
 function renderAlbum(sec) {
   const items = sec.album || [];
   if (!items.length) return '';
@@ -438,105 +438,25 @@ function renderAlbum(sec) {
     </div>
   `).join('');
 
-  const dotsHtml = items.map((_, i) => `
-    <div class="album-dot ${i === 0 ? 'active' : ''}" data-idx="${i}"></div>
-  `).join('');
-
   return `
     <div class="role-section">
       <div class="role-section-title">${ICONS.heart}<span>恋爱相册</span></div>
-      <div class="album-carousel" id="albumCarousel">
-        <div class="album-track" id="albumTrack">${itemsHtml}</div>
-        <div class="album-dots" id="albumDots">${dotsHtml}</div>
-      </div>
+      <div class="album-grid" id="albumGrid">${itemsHtml}</div>
     </div>
   `;
 }
 
-// 初始化相册跑马灯
+// 初始化相册：点击图片打开大图查看器
 function initAlbumCarousel() {
-  const track = document.getElementById('albumTrack');
-  const dots = document.getElementById('albumDots');
-  if (!track || !dots) return;
+  const grid = document.getElementById('albumGrid');
+  if (!grid) return;
 
-  const slides = track.querySelectorAll('.album-slide');
-  const total = slides.length;
-  if (total === 0) return;
-
-  let current = 0;
-  let timer = null;
-  let touchStartX = 0;
-  let touchStartY = 0;
-
-  function goTo(idx) {
-    current = idx;
-    track.style.transform = `translateX(-${current * 100}%)`;
-    dots.querySelectorAll('.album-dot').forEach((d, i) => {
-      d.classList.toggle('active', i === current);
-    });
-  }
-
-  function next() { goTo((current + 1) % total); }
-  function prev() { goTo((current - 1 + total) % total); }
-
-  function startAuto() {
-    stopAuto();
-    timer = setInterval(next, 3500);
-  }
-
-  function stopAuto() {
-    if (timer) { clearInterval(timer); timer = null; }
-  }
-
-  // 圆点点击
-  dots.querySelectorAll('.album-dot').forEach(d => {
-    d.addEventListener('click', () => {
-      goTo(Number(d.dataset.idx));
-      startAuto();
-    });
-  });
-
-  // 点击图片打开大图查看器
+  const slides = grid.querySelectorAll('.album-slide');
   slides.forEach((slide, i) => {
     slide.addEventListener('click', () => {
       openAlbumViewer(i);
-      stopAuto();
     });
   });
-
-  // 触屏滑动
-  track.addEventListener('touchstart', (e) => {
-    touchStartX = e.touches[0].clientX;
-    touchStartY = e.touches[0].clientY;
-    stopAuto();
-  }, { passive: true });
-
-  track.addEventListener('touchend', (e) => {
-    const dx = e.changedTouches[0].clientX - touchStartX;
-    const dy = e.changedTouches[0].clientY - touchStartY;
-    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
-      if (dx < 0) next();
-      else prev();
-    }
-    startAuto();
-  }, { passive: true });
-
-  // 鼠标悬停暂停
-  track.addEventListener('mouseenter', stopAuto);
-  track.addEventListener('mouseleave', startAuto);
-
-  // 键盘左右切换
-  document.addEventListener('keydown', function albumKey(e) {
-    const carousel = document.getElementById('albumCarousel');
-    if (!carousel) return;
-    const rect = carousel.getBoundingClientRect();
-    const visible = rect.top < window.innerHeight && rect.bottom > 0;
-    if (!visible) return;
-    if (e.key === 'ArrowLeft') { prev(); startAuto(); }
-    if (e.key === 'ArrowRight') { next(); startAuto(); }
-  });
-
-  startAuto();
 }
 
 // 相册大图查看器（带缩放过渡 + 左右切换 + 手势）
@@ -544,9 +464,9 @@ let albumViewerIdx = 0;
 let albumViewerItems = [];
 
 function openAlbumViewer(idx) {
-  const carousel = document.getElementById('albumCarousel');
-  if (!carousel) return;
-  const slides = carousel.querySelectorAll('.album-slide');
+  const grid = document.getElementById('albumGrid');
+  if (!grid) return;
+  const slides = grid.querySelectorAll('.album-slide');
   albumViewerItems = [];
   albumViewerIdx = idx;
   slides.forEach(s => {

@@ -1771,73 +1771,45 @@ body {
   line-height: 1.6;
 }
 
-/* ===== 恋爱相册（跑马灯轮播） ===== */
-.album-carousel {
-  position: relative;
-  overflow: hidden;
-  border-radius: 14px;
-  background: #FFF5F7;
-  border: 1px solid var(--border);
-}
-
-.album-track {
-  display: flex;
-  transition: transform 0.5s cubic-bezier(0.25, 0.1, 0.25, 1);
-  will-change: transform;
+/* ===== 恋爱相册（网格并列排列） ===== */
+.album-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 10px;
+  padding: 12px;
 }
 
 .album-slide {
-  flex: 0 0 100%;
   position: relative;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  transition: transform 0.2s;
+}
+
+.album-slide:hover {
+  transform: scale(1.02);
 }
 
 .album-slide img {
   display: block;
   width: 100%;
-  aspect-ratio: 4/3;
+  aspect-ratio: 1;
   object-fit: cover;
   background: var(--primary-light);
 }
 
 .album-desc {
-  padding: 10px 14px;
-  font-size: 13px;
+  padding: 6px 8px;
+  font-size: 12px;
   color: var(--text-secondary);
   text-align: center;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  background: rgba(255,255,255,0.8);
-}
-
-/* 圆点指示器 */
-.album-dots {
-  display: flex;
-  justify-content: center;
-  gap: 8px;
-  padding: 12px 0;
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 2;
-}
-
-.album-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: rgba(0,0,0,0.2);
-  cursor: pointer;
-  transition: all 0.3s;
-}
-
-.album-dot.active {
-  width: 24px;
-  border-radius: 4px;
-  background: var(--primary);
+  background: rgba(255,255,255,0.9);
 }
 
 /* ===== 相册大图查看器 ===== */
