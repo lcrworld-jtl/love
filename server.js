@@ -35,9 +35,13 @@ const IMG_EXT_MAP = {
   'image/webp': 'webp', 'image/bmp': 'bmp'
 };
 
-// Simple token auth
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'love2026';
-const TOKEN = crypto.createHash('sha256').update(ADMIN_PASSWORD).digest('hex');
+// Token auth（密码必须通过环境变量设置，开源版无默认密码）
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
+if (!ADMIN_PASSWORD) {
+  console.error('环境变量 ADMIN_PASSWORD 未设置，管理后台不可用');
+  // 不退出进程，只禁用管理功能
+}
+const TOKEN = ADMIN_PASSWORD ? crypto.createHash('sha256').update(ADMIN_PASSWORD).digest('hex') : null;
 
 // 语音上传用裸 body
 app.use('/api/voice/upload', express.raw({ type: ['audio/webm', 'audio/ogg', 'audio/mp3', 'audio/wav', 'audio/*'], limit: '10mb' }));
@@ -54,6 +58,7 @@ app.use(express.static(path.join(__dirname, 'public'), {
 
 // Auth 中间件（提前定义，供后续路由使用）
 function auth(req, res, next) {
+  if (!TOKEN) return res.status(503).json({ error: '管理后台未配置' });
   const token = req.headers.authorization?.replace('Bearer ', '');
   if (token !== TOKEN) {
     return res.status(401).json({ error: '未授权' });
@@ -183,7 +188,20 @@ function readJson(file, fallback) {
 }
 
 function writeJson(file, data) {
-  fs.writeFileSync(file, JSON.stringify(data, null, 2), 'utf-8');
+  // 原子写入：先写临时文件再重命名，避免并发写入损坏
+  const tmp = file + '.tmp.' + Date.now();
+  fs.writeFileSync(tmp, JSON.stringify(data, null, 2), 'utf-8');
+  fs.renameSync(tmp, file);
+}
+
+// 安全文件名：防止路径遍历
+function safeFilename(filename) {
+  if (!filename || typeof filename !== 'string') return null;
+  const base = path.basename(filename);
+  // 只允许字母数字下划线连字符点
+  if (!/^[\w.-]+$/.test(base)) return null;
+  if (base.startsWith('.') || base.length > 255) return null;
+  return base;
 }
 
 // ===== 简单限流（按 IP） =====
@@ -200,23 +218,46 @@ function rateLimit(key, maxCount, windowMs) {
   return record.count <= maxCount;
 }
 
+// 每小时清理过期限流记录，防止内存泄漏
+setInterval(() => {
+  const now = Date.now();
+  for (const [key, record] of rateLimitMap) {
+    if (now > record.reset) rateLimitMap.delete(key);
+  }
+}, 60 * 60 * 1000);
+
 function getClientIp(req) {
   return (req.headers['x-forwarded-for'] || req.socket.remoteAddress || '').split(',')[0].trim();
+}
+
+// IP 哈希（隐私合规：不存储原始 IP）
+function hashIp(ip) {
+  return crypto.createHash('sha256').update(ip + 'love-salt').digest('hex').slice(0, 16);
 }
 
 // ===== Helper: fetch JSON from Netease API =====
 function fetchNetease(apiPath) {
   return new Promise((resolve, reject) => {
-    http.get(NETEASE_API + apiPath, (res) => {
+    const req = http.get(NETEASE_API + apiPath, (res) => {
       let data = '';
       res.on('data', chunk => data += chunk);
       res.on('end', () => {
         try { resolve(JSON.parse(data)); }
         catch (e) { reject(e); }
       });
-    }).on('error', reject);
+    });
+    req.on('error', reject);
+    req.setTimeout(8000, () => {
+      req.destroy();
+      reject(new Error('Request timeout'));
+    });
   });
 }
+
+// ===== 健康检查 =====
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok', uptime: process.uptime() });
+});
 
 // ===== 内容 API =====
 app.get('/api/content', (req, res) => {
@@ -224,7 +265,8 @@ app.get('/api/content', (req, res) => {
     const data = readJson(DATA_FILE, { title: '', subtitle: '', sections: [] });
     res.json(data);
   } catch (e) {
-    res.status(500).json({ error: '读取失败' });
+    console.error('读取失败:', e);
+    res.status(500).json({ error: '服务器内部错误' });
   }
 });
 
@@ -233,7 +275,8 @@ app.post('/api/content', auth, (req, res) => {
     writeJson(DATA_FILE, req.body);
     res.json({ ok: true });
   } catch (e) {
-    res.status(500).json({ error: '保存失败' });
+    console.error('保存失败:', e);
+    res.status(500).json({ error: '服务器内部错误' });
   }
 });
 
@@ -261,7 +304,8 @@ app.get('/api/music/playlist', async (req, res) => {
       res.status(500).json({ error: '获取歌单失败' });
     }
   } catch (e) {
-    res.status(500).json({ error: 'API错误' });
+    console.error('音乐API错误:', e);
+    res.status(500).json({ error: '服务器内部错误' });
   }
 });
 
@@ -278,12 +322,14 @@ app.get('/api/music/url', async (req, res) => {
       res.status(404).json({ error: '获取链接失败' });
     }
   } catch (e) {
-    res.status(500).json({ error: 'API错误' });
+    console.error('音乐URL错误:', e);
+    res.status(500).json({ error: '服务器内部错误' });
   }
 });
 
 // ===== 登录 =====
 app.post('/api/login', (req, res) => {
+  if (!TOKEN) return res.status(503).json({ error: '管理后台未配置' });
   const { password } = req.body;
   if (password === ADMIN_PASSWORD) {
     res.json({ token: TOKEN });
@@ -411,11 +457,11 @@ app.post('/api/stats/track', (req, res) => {
     s.pages[pagePath] = (s.pages[pagePath] || 0) + 1;
     s.totalPv++;
     // UV
-    const visitorKey = visitorId || getClientIp(req);
+    const visitorKey = visitorId || hashIp(getClientIp(req));
     if (!s.visitors.find(v => v.id === visitorKey)) {
       s.visitors.push({
         id: visitorKey,
-        ip: getClientIp(req),
+        ip: hashIp(getClientIp(req)),
         ua: (req.headers['user-agent'] || '').slice(0, 200),
         first: new Date().toISOString(),
         last: new Date().toISOString(),
@@ -646,7 +692,9 @@ app.get('/api/voice', (req, res) => {
 
 // 静态语音文件
 app.get('/voice/:filename', (req, res) => {
-  const f = path.join(VOICE_DIR, path.basename(req.params.filename));
+  const name = safeFilename(req.params.filename);
+  if (!name) return res.status(403).send('Invalid filename');
+  const f = path.join(VOICE_DIR, name);
   if (!fs.existsSync(f)) return res.status(404).send('Not found');
   res.sendFile(f);
 });
@@ -738,7 +786,9 @@ app.get('/api/gallery', (req, res) => {
 
 // 静态图片文件访问
 app.get('/gallery-img/:filename', (req, res) => {
-  const f = path.join(GALLERY_DIR, path.basename(req.params.filename));
+  const name = safeFilename(req.params.filename);
+  if (!name) return res.status(403).send('Invalid filename');
+  const f = path.join(GALLERY_DIR, name);
   if (!fs.existsSync(f)) return res.status(404).send('Not found');
   res.sendFile(f);
 });

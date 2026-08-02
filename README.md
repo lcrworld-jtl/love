@@ -54,7 +54,7 @@ cp .env.example .env
 | 变量 | 说明 | 默认值 |
 |------|------|--------|
 | `PORT` | 服务端口 | `3009` |
-| `ADMIN_PASSWORD` | 管理后台密码 | `love2026` |
+| `ADMIN_PASSWORD` | 管理后台密码（必填） | 无默认值，必须设置 |
 | `NETEASE_API` | 网易云 API 地址（音乐播放器用） | `http://127.0.0.1:3002` |
 | `PLAYLIST_ID` | 网易云歌单 ID | 空（不启用音乐） |
 | `SITE_URL` | 站点域名（SEO 用） | `http://localhost:3009` |
