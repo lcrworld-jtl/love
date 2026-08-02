@@ -461,7 +461,7 @@ function initAlbumCarousel() {
 
   const slides = track.querySelectorAll('.album-slide');
   const total = slides.length;
-  if (total <= 1) return;
+  if (total === 0) return;
 
   let current = 0;
   let timer = null;
@@ -1053,10 +1053,16 @@ function initMusicPlayer() {
           statusEl.textContent = '准备播放';
           autoPlay();
         }
+      } else {
+        // API 返回错误或歌单为空
+        nameEl.textContent = '暂无歌曲';
+        statusEl.textContent = data.error || '歌单为空';
+        iconEl.innerHTML = PLAY_ICON;
       }
     } catch (e) {
       nameEl.textContent = '加载失败';
       statusEl.textContent = '请刷新重试';
+      iconEl.innerHTML = PLAY_ICON;
     }
   }
 

@@ -3,6 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 const http = require('http');
+const { spawn } = require('child_process');
 
 const app = express();
 const PORT = process.env.PORT || 3009;
@@ -973,4 +974,27 @@ app.get('/agreement', (req, res) => {
 
 app.listen(PORT, '127.0.0.1', () => {
   console.log(`Love site running on http://127.0.0.1:${PORT}`);
+
+  // 自动启动网易云音乐 API（如果 NETEASE_AUTO_START=1 或 NETEASE_API 未自定义）
+  const neteaseApi = process.env.NETEASE_API;
+  if (!neteaseApi || neteaseApi === 'http://127.0.0.1:3002') {
+    const neteasePath = path.join(__dirname, 'node_modules', 'NeteaseCloudMusicApi', 'app.js');
+    if (fs.existsSync(neteasePath)) {
+      const neteasePort = neteaseApi ? new URL(neteaseApi).port : 3002;
+      const child = spawn('node', [neteasePath], {
+        env: { ...process.env, PORT: neteasePort },
+        stdio: 'pipe',
+        detached: false
+      });
+      child.stdout.on('data', (d) => process.stdout.write(`[NeteaseAPI] ${d}`));
+      child.stderr.on('data', (d) => process.stderr.write(`[NeteaseAPI] ${d}`));
+      child.on('error', (e) => console.error('启动网易云API失败:', e.message));
+      child.on('exit', (code) => {
+        if (code !== 0) console.error(`网易云API异常退出，code=${code}`);
+      });
+      console.log(`NeteaseCloudMusicApi 已启动 (port ${neteasePort})`);
+    } else {
+      console.warn('NeteaseCloudMusicApi 未安装，音乐功能不可用');
+    }
+  }
 });

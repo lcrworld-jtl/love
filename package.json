@@ -4,11 +4,14 @@
   "description": "关于爱的一些想法 — 记录爱与时光的站点",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "start:netease": "node node_modules/NeteaseCloudMusicApi/app.js",
+    "start:all": "node server.js & node node_modules/NeteaseCloudMusicApi/app.js"
   },
   "keywords": ["love", "romance", "anniversary", "time-capsule", "pwa"],
   "license": "MIT",
   "dependencies": {
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "NeteaseCloudMusicApi": "^4.0.25"
   }
 }
