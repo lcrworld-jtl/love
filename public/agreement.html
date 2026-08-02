@@ -42,6 +42,19 @@
       --accent-fg: #000;
       --border: #fff; --card: #1a1a1a; --focus: #ff0;
     }
+    /* 自定义主题色覆盖（由 JS 设置） */
+    [data-custom-color] {
+      --accent: var(--custom-color);
+      --focus: var(--custom-color);
+    }
+    [data-custom-color][data-theme="light"] {
+      --accent2: var(--custom-color);
+    }
+    [data-custom-color] .color-swatch.active {
+      outline: 3px solid var(--focus);
+      outline-offset: 2px;
+      box-shadow: 0 0 0 4px var(--bg);
+    }
 
     * { box-sizing: border-box; }
     html { scroll-behavior: smooth; }
@@ -312,6 +325,23 @@
         </div>
       </div>
       <div class="a11y-section">
+        <span class="a11y-label" data-i18n="theme_color">主题色</span>
+        <div class="a11y-row" role="group" aria-label="主题色" id="color-swatches" style="flex-wrap:wrap;">
+          <button class="a11y-btn color-swatch" data-color="#2563eb" style="background:#2563eb;color:#fff;flex:0 0 36px;width:36px;height:36px;padding:0;border-radius:4px;" aria-label="蓝色"></button>
+          <button class="a11y-btn color-swatch" data-color="#db2777" style="background:#db2777;color:#fff;flex:0 0 36px;width:36px;height:36px;padding:0;border-radius:4px;" aria-label="粉色"></button>
+          <button class="a11y-btn color-swatch" data-color="#7c3aed" style="background:#7c3aed;color:#fff;flex:0 0 36px;width:36px;height:36px;padding:0;border-radius:4px;" aria-label="紫色"></button>
+          <button class="a11y-btn color-swatch" data-color="#059669" style="background:#059669;color:#fff;flex:0 0 36px;width:36px;height:36px;padding:0;border-radius:4px;" aria-label="绿色"></button>
+          <button class="a11y-btn color-swatch" data-color="#d97706" style="background:#d97706;color:#fff;flex:0 0 36px;width:36px;height:36px;padding:0;border-radius:4px;" aria-label="橙色"></button>
+          <button class="a11y-btn color-swatch" data-color="#dc2626" style="background:#dc2626;color:#fff;flex:0 0 36px;width:36px;height:36px;padding:0;border-radius:4px;" aria-label="红色"></button>
+          <button class="a11y-btn color-swatch" data-color="#0891b2" style="background:#0891b2;color:#fff;flex:0 0 36px;width:36px;height:36px;padding:0;border-radius:4px;" aria-label="青色"></button>
+          <button class="a11y-btn color-swatch" data-color="#a21caf" style="background:#a21caf;color:#fff;flex:0 0 36px;width:36px;height:36px;padding:0;border-radius:4px;" aria-label="品红"></button>
+          <label class="color-custom-label" style="flex:1;min-width:80px;display:flex;align-items:center;gap:4px;padding:4px 8px;background:var(--card);border:none;border-radius:4px;cursor:pointer;font-size:12px;color:var(--fg);" data-i18n="custom_color">
+            自定义
+            <input type="color" id="custom-color-picker" value="#2563eb" style="width:32px;height:32px;border:none;padding:0;cursor:pointer;background:transparent;border-radius:4px;" aria-label="自定义主题色">
+          </label>
+        </div>
+      </div>
+      <div class="a11y-section">
         <span class="a11y-label" data-i18n="lineheight">行高</span>
         <div class="a11y-row" role="group" aria-label="行高">
           <button class="a11y-btn" data-lh="1.5" data-i18n="lh_tight">紧</button>
@@ -392,7 +422,7 @@
     var root = document.documentElement;
     var PREFS_KEY = 'agreement_prefs';
     var LANG_KEY = 'agreement_lang';
-    var defaults = { theme: 'light', fs: 18, lh: 1.8, ls: '0', ff: 'sans' };
+    var defaults = { theme: 'light', fs: 18, lh: 1.8, ls: '0', ff: 'sans', customColor: '' };
     var prefs = loadPrefs();
 
     // ===== 双语字典 =====
@@ -407,6 +437,8 @@
         a11y: '无障碍设置',
         fontsize: '字号',
         theme: '主题',
+        theme_color: '主题色',
+        custom_color: '自定义',
         theme_light: '浅', theme_dark: '深', theme_sepia: '护眼', theme_contrast: '高对比',
         lineheight: '行高',
         lh_tight: '紧', lh_normal: '标', lh_loose: '松',
@@ -431,6 +463,8 @@
         a11y: 'Accessibility',
         fontsize: 'Font size',
         theme: 'Theme',
+        theme_color: 'Accent color',
+        custom_color: 'Custom',
         theme_light: 'Light', theme_dark: 'Dark', theme_sepia: 'Sepia', theme_contrast: 'Contrast',
         lineheight: 'Line height',
         lh_tight: 'Tight', lh_normal: 'Normal', lh_loose: 'Loose',
@@ -515,6 +549,15 @@
         : '-apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif';
       root.style.setProperty('--ff', ff);
 
+      // 自定义主题色
+      if (prefs.customColor) {
+        root.setAttribute('data-custom-color', '');
+        root.style.setProperty('--custom-color', prefs.customColor);
+      } else {
+        root.removeAttribute('data-custom-color');
+        root.style.removeProperty('--custom-color');
+      }
+
       document.querySelectorAll('[data-theme-btn]').forEach(function (b) {
         b.classList.toggle('active', b.dataset.themeBtn === prefs.theme);
       });
@@ -527,6 +570,13 @@
       document.querySelectorAll('[data-ff]').forEach(function (b) {
         b.classList.toggle('active', b.dataset.ff == prefs.ff);
       });
+      // 色块高亮
+      document.querySelectorAll('.color-swatch').forEach(function (b) {
+        b.classList.toggle('active', b.dataset.color === prefs.customColor);
+      });
+      // 取色器同步
+      var picker = document.getElementById('custom-color-picker');
+      if (picker) picker.value = prefs.customColor || '#2563eb';
     }
 
     // ===== 抽屉开关 =====
@@ -561,6 +611,18 @@
     });
     document.querySelectorAll('[data-theme-btn]').forEach(function (b) {
       b.addEventListener('click', function () { prefs.theme = b.dataset.themeBtn; savePrefs(); applyAll(); });
+    });
+    // 色块点击
+    document.querySelectorAll('.color-swatch').forEach(function (b) {
+      b.addEventListener('click', function () {
+        prefs.customColor = b.dataset.color;
+        savePrefs(); applyAll();
+      });
+    });
+    // 自定义取色器
+    document.getElementById('custom-color-picker').addEventListener('input', function () {
+      prefs.customColor = this.value;
+      savePrefs(); applyAll();
     });
     document.querySelectorAll('[data-lh]').forEach(function (b) {
       b.addEventListener('click', function () { prefs.lh = parseFloat(b.dataset.lh); savePrefs(); applyAll(); });
