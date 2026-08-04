@@ -5,6 +5,27 @@ const crypto = require('crypto');
 const http = require('http');
 const { spawn } = require('child_process');
 
+// 加载 .env 文件（优先于 process.env，不覆盖已存在的环境变量）
+try {
+  const envPath = path.join(__dirname, '.env');
+  if (fs.existsSync(envPath)) {
+    const envContent = fs.readFileSync(envPath, 'utf8');
+    for (const line of envContent.split('\n')) {
+      const trimmed = line.trim();
+      if (!trimmed || trimmed.startsWith('#')) continue;
+      const eqIdx = trimmed.indexOf('=');
+      if (eqIdx === -1) continue;
+      const key = trimmed.slice(0, eqIdx).trim();
+      const val = trimmed.slice(eqIdx + 1).trim();
+      if (key && !process.env[key]) {
+        process.env[key] = val;
+      }
+    }
+  }
+} catch (e) {
+  console.warn('无法加载 .env 文件:', e.message);
+}
+
 const app = express();
 const PORT = process.env.PORT || 3009;
 const DATA_DIR = path.join(__dirname, 'data');
