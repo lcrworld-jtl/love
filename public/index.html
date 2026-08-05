@@ -17,7 +17,11 @@
   <link rel="preconnect" href="https://api.love.lcrworld.xyz">
   <link rel="dns-prefetch" href="https://p3.music.126.net">
   <link rel="dns-prefetch" href="https://p4.music.126.net">
-  <link rel="stylesheet" href="/css/style.css">
+  <link rel="preload" href="/css/style.css" as="style" fetchpriority="high">
+  <link rel="stylesheet" href="/css/style.css" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="/css/style.css"></noscript>
+  <link rel="preload" href="/js/common.js" as="script">
+  <link rel="preload" href="/manifest.json" as="fetch" crossorigin="anonymous">
 
   <!-- Open Graph -->
   <meta property="og:type" content="website">

@@ -1,7 +1,7 @@
 // Love 站点 Service Worker
 // 策略：API 请求网络优先（数据时效性），静态资源缓存优先（含离线兜底）
 
-const CACHE_VERSION = 'love-v20';
+const CACHE_VERSION = 'love-v22';
 const STATIC_CACHE = CACHE_VERSION + '-static';
 const RUNTIME_CACHE = CACHE_VERSION + '-runtime';
 
