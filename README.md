@@ -2,6 +2,10 @@
 
 > 喜欢不一定要拥有。但有些东西，值得被记住。
 
+[![GitHub](https://img.shields.io/badge/GitHub-lcrworld--jtl%2Flove-181717?logo=github)](https://github.com/lcrworld-jtl/love)
+[![Gitee](https://img.shields.io/badge/Gitee-lcrworld%2Flove-C71D23?logo=gitee)](https://gitee.com/lcrworld/love)
+[![License](https://img.shields.io/badge/license-MIT-blue)](./LICENSE)
+
 这是一个关于爱的网站。
 
 不是那种千篇一律的情侣主页模板——它是我一行一行写出来的，从恋爱观到时间胶囊，从星空许愿到君子协议。每一行代码背后，都有一个想要被珍藏的瞬间。
@@ -30,9 +34,12 @@
 ## 🚀 自己搭一个
 
 ```bash
-# 克隆仓库
-git clone https://gitee.com/你的用户名/MyLove.git
-cd MyLove
+# 克隆仓库（GitHub）
+git clone https://github.com/lcrworld-jtl/love.git
+# 或克隆仓库（Gitee）
+# git clone https://gitee.com/lcrworld/love.git
+
+cd love
 
 # 安装依赖
 npm install
@@ -64,7 +71,7 @@ cp .env.example .env
 ## 📁 项目结构
 
 ```
-MyLove/
+love/
 ├── public/                 # 前端文件
 │   ├── css/style.css       # 全站样式
 │   ├── js/                 # 脚本
