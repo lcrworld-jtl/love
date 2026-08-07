@@ -41,7 +41,7 @@ function createTunnel(targetHost, targetPort, proxyHost, proxyPort) {
 
 async function runCommand(conn, cmd) {
   return new Promise((resolve, reject) => {
-    conn.exec(cmd, (err, stream) => {
+    conn.exec(cmd, { timeout: 60000 }, (err, stream) => {
       if (err) return reject(err);
       let stdout = '';
       let stderr = '';
@@ -76,6 +76,8 @@ async function deploy() {
         `cd ${APP_DIR} && git fetch origin 2>&1 && git reset --hard origin/master 2>&1`,
         `echo "=== Installing dependencies ==="`,
         `cd ${APP_DIR} && npm install --production 2>&1`,
+        `echo "=== Fixing NETEASE_API port in .env ==="`,
+        `sed -i 's|NETEASE_API=http://127.0.0.1:3002|NETEASE_API=http://127.0.0.1:4000|' ${APP_DIR}/.env 2>&1`,
         `echo "=== Restarting app ==="`,
         `cd ${APP_DIR} && (pm2 restart love-site 2>&1 || pm2 start server.js --name love-site 2>&1 || npx pm2 restart love-site 2>&1 || npx pm2 start server.js --name love-site 2>&1)`,
         `echo "=== Verifying ==="`,
