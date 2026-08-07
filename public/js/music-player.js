@@ -207,6 +207,12 @@
       const res = await fetch('/api/music/url?id=' + song.id);
       const data = await res.json();
 
+      // 修复竞态条件：如果用户在此期间点击了其他歌曲，放弃当前结果
+      if (idx !== currentIdx) {
+        isLoadingUrl = false;
+        return;
+      }
+
       if (!data.url) {
         statusEl.textContent = '无版权，跳过';
         isLoadingUrl = false;
@@ -234,10 +240,22 @@
 
       audio = newAudio;
 
-      await newAudio.play();
+      // 跨页面恢复：先设置播放进度再播放
       if (startTime && startTime > 0) {
-        newAudio.currentTime = startTime;
+        await new Promise((resolve) => {
+          const onMeta = () => {
+            newAudio.currentTime = startTime;
+            resolve();
+          };
+          if (newAudio.readyState >= 1) {
+            onMeta();
+          } else {
+            newAudio.addEventListener('loadedmetadata', onMeta, { once: true });
+          }
+        });
       }
+
+      await newAudio.play();
       isPlaying = true;
       isLoadingUrl = false;
       iconEl.innerHTML = PAUSE_ICON;

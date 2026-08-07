@@ -944,6 +944,8 @@ function initMusicPlayer() {
 
   // 页面离开前保存播放进度
   window.addEventListener('beforeunload', saveMusicState);
+  // 定时保存进度（每 5 秒），防止意外关闭
+  setInterval(saveMusicState, 5000);
 
   async function loadPlaylist() {
     try {
@@ -1046,6 +1048,7 @@ function initMusicPlayer() {
   async function playSong(idx, startTime) {
     if (!songs.length) return;
 
+    // 立即更新 UI，让用户看到点击反馈
     currentIdx = idx;
     const song = songs[idx];
     nameEl.textContent = song.name;
@@ -1053,6 +1056,7 @@ function initMusicPlayer() {
     updateCover(song);
     renderPlaylist();
 
+    // 如果已有请求在加载中，跳过（不阻塞 UI 更新）
     if (isLoadingUrl) return;
     isLoadingUrl = true;
 
@@ -1069,6 +1073,13 @@ function initMusicPlayer() {
       const res = await fetch('/api/music/url?id=' + song.id);
       const data = await res.json();
 
+      // 修复竞态条件：如果用户在此期间点击了其他歌曲，放弃当前结果
+      if (idx !== currentIdx) {
+        isLoadingUrl = false;
+        // 如果 currentIdx 有新的请求，它会自己处理 isLoadingUrl
+        return;
+      }
+
       if (!data.url) {
         statusEl.textContent = '无版权，跳过';
         isLoadingUrl = false;
@@ -1078,7 +1089,6 @@ function initMusicPlayer() {
 
       const newAudio = new Audio(data.url);
       newAudio.volume = 0.4;
-      const myIdx = idx;
 
       newAudio.onended = () => {
         if (audio !== newAudio) return;
@@ -1097,11 +1107,23 @@ function initMusicPlayer() {
 
       audio = newAudio;
 
-      await newAudio.play();
-      // 跨页面恢复：跳到上次播放进度
+      // 跨页面恢复：先设置播放进度再播放
       if (startTime && startTime > 0) {
-        newAudio.currentTime = startTime;
+        // 等待元数据加载后跳转到指定位置
+        await new Promise((resolve) => {
+          const onMeta = () => {
+            newAudio.currentTime = startTime;
+            resolve();
+          };
+          if (newAudio.readyState >= 1) {
+            onMeta();
+          } else {
+            newAudio.addEventListener('loadedmetadata', onMeta, { once: true });
+          }
+        });
       }
+
+      await newAudio.play();
       isPlaying = true;
       isLoadingUrl = false;
       iconEl.innerHTML = PAUSE_ICON;
