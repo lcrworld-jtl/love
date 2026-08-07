@@ -7,7 +7,7 @@ const PROXY_HOST = '127.0.0.1';
 const PROXY_PORT = 18080;
 const SERVER = '47.95.242.144';
 const SERVER_PORT = 22;
-const APP_DIR = '/workspace/love-site';
+const APP_DIR = '/opt/love-site';
 
 const password = process.env.SERVER_PASS;
 if (!password) {
@@ -73,7 +73,7 @@ async function deploy() {
     try {
       const commands = [
         `echo "=== Pulling latest code ==="`,
-        `cd ${APP_DIR} && git pull 2>&1 || echo "GIT_PULL_FAILED"`,
+        `cd ${APP_DIR} && git fetch origin 2>&1 && git reset --hard origin/master 2>&1`,
         `echo "=== Installing dependencies ==="`,
         `cd ${APP_DIR} && npm install --production 2>&1`,
         `echo "=== Restarting app ==="`,
