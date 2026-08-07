@@ -1073,10 +1073,10 @@ function initMusicPlayer() {
       const res = await fetch('/api/music/url?id=' + song.id);
       const data = await res.json();
 
-      // 修复竞态条件：如果用户在此期间点击了其他歌曲，放弃当前结果
+      // 修复竞态条件：如果用户在此期间点击了其他歌曲，放弃当前结果，立即加载新歌曲
       if (idx !== currentIdx) {
         isLoadingUrl = false;
-        // 如果 currentIdx 有新的请求，它会自己处理 isLoadingUrl
+        playSong(currentIdx);
         return;
       }
 

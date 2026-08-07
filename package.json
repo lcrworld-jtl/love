@@ -8,10 +8,17 @@
     "start:netease": "node node_modules/NeteaseCloudMusicApi/app.js",
     "start:all": "node server.js & node node_modules/NeteaseCloudMusicApi/app.js"
   },
-  "keywords": ["love", "romance", "anniversary", "time-capsule", "pwa"],
+  "keywords": [
+    "love",
+    "romance",
+    "anniversary",
+    "time-capsule",
+    "pwa"
+  ],
   "license": "MIT",
   "dependencies": {
     "express": "^4.18.2",
-    "NeteaseCloudMusicApi": "^4.0.25"
+    "NeteaseCloudMusicApi": "^4.0.25",
+    "ssh2": "^1.17.0"
   }
 }

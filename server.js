@@ -67,7 +67,7 @@ const TOKEN = ADMIN_PASSWORD ? crypto.createHash('sha256').update(ADMIN_PASSWORD
 
 // 语音上传用裸 body
 app.use('/api/voice/upload', express.raw({ type: ['audio/webm', 'audio/ogg', 'audio/mp3', 'audio/wav', 'audio/*'], limit: '10mb' }));
-app.use(express.json({ limit: '25mb' }));
+app.use(express.json({ limit: '50mb' }));
 
 // 静态文件 - 对 service-worker.js 不缓存
 app.use(express.static(path.join(__dirname, 'public'), {
