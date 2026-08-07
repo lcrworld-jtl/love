@@ -74,6 +74,8 @@ app.use(express.static(path.join(__dirname, 'public'), {
   setHeaders: (res, filePath) => {
     if (filePath.endsWith('service-worker.js') || filePath.endsWith('manifest.json')) {
       res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    } else if (filePath.endsWith('sitemap.xml')) {
+      res.setHeader('Cache-Control', 'public, max-age=86400');
     }
   }
 }));
@@ -90,16 +92,6 @@ function auth(req, res, next) {
 
 // ===== SEO: 站点域名 & 页面清单 =====
 const SITE_URL = process.env.SITE_URL || `http://localhost:${PORT}`;
-const SEO_PAGES = [
-  { path: '/', priority: '1.0', changefreq: 'daily' },
-  { path: '/lover', priority: '0.9', changefreq: 'weekly' },
-  { path: '/capsule', priority: '0.8', changefreq: 'weekly' },
-  { path: '/stars', priority: '0.8', changefreq: 'weekly' },
-  { path: '/anniversary', priority: '0.8', changefreq: 'weekly' },
-  { path: '/gallery', priority: '0.8', changefreq: 'weekly' },
-  { path: '/bucket-list', priority: '0.7', changefreq: 'weekly' },
-  { path: '/agreement', priority: '0.6', changefreq: 'monthly' }
-];
 
 // robots.txt
 app.get('/robots.txt', (req, res) => {
@@ -182,22 +174,6 @@ Disallow: /
 # ===== Sitemap =====
 Sitemap: ${SITE_URL}/sitemap.xml
 `);
-});
-
-// sitemap.xml
-app.get('/sitemap.xml', (req, res) => {
-  res.type('application/xml');
-  const today = new Date().toISOString().slice(0, 10);
-  const urls = SEO_PAGES.map(p => `  <url>
-    <loc>${SITE_URL}${p.path}</loc>
-    <lastmod>${today}</lastmod>
-    <changefreq>${p.changefreq}</changefreq>
-    <priority>${p.priority}</priority>
-  </url>`).join('\n');
-  res.send(`<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${urls}
-</urlset>`);
 });
 
 // ===== 通用 JSON 文件读写 =====
