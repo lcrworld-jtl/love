@@ -71,6 +71,7 @@
     try {
       const state = {
         idx: currentIdx,
+        songId: songs[currentIdx] ? songs[currentIdx].id : null,
         playing: isPlaying,
         time: audio ? audio.currentTime : 0,
         ts: Date.now()
@@ -107,8 +108,16 @@
 
         // 检查是否有跨页面恢复的状态
         const saved = loadMusicState();
-        if (saved && saved.idx < songs.length) {
-          currentIdx = saved.idx;
+        // 歌单顺序/内容可能被调整，优先按歌曲 ID 匹配恢复，避免旧索引错位
+        let restoreIdx = -1;
+        if (saved && saved.songId && songs.length) {
+          restoreIdx = songs.findIndex(s => String(s.id) === String(saved.songId));
+        }
+        if (restoreIdx === -1 && saved && saved.idx < songs.length) {
+          restoreIdx = saved.idx;
+        }
+        if (restoreIdx >= 0) {
+          currentIdx = restoreIdx;
           updateCover(songs[currentIdx]);
           nameEl.textContent = songs[currentIdx].name;
           if (saved.playing) {
