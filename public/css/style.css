@@ -158,6 +158,7 @@ body {
 }
 
 .hero-entry svg {
+  display: block;
   width: 14px;
   height: 14px;
   color: var(--primary);
@@ -230,6 +231,7 @@ body {
 }
 
 .nav-item svg {
+  display: block;
   width: 14px;
   height: 14px;
   flex-shrink: 0;
@@ -310,6 +312,7 @@ body {
 }
 
 .card-title svg {
+  display: block;
   width: 20px;
   height: 20px;
   flex-shrink: 0;
@@ -320,7 +323,8 @@ body {
   font-size: 15px;
   color: var(--text);
   white-space: pre-wrap;
-  word-break: break-word;
+  overflow-wrap: break-word;
+  word-break: normal;
 }
 
 /* ===== Link cards ===== */
@@ -890,7 +894,8 @@ body {
   font-size: 14px;
   color: var(--text);
   line-height: 1.6;
-  word-break: break-word;
+  overflow-wrap: break-word;
+  word-break: normal;
 }
 
 /* ===== 语音留言 ===== */
@@ -1764,6 +1769,7 @@ body {
 }
 
 .role-section-title svg {
+  display: block;
   width: 18px;
   height: 18px;
   color: var(--primary);
