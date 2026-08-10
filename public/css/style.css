@@ -544,7 +544,7 @@ body {
   box-shadow: var(--neu-inset-sm);
 }
 
-.quant-desc {
+.quant-fill {
   height: 100%;
   border-radius: 4px;
   width: 0;
@@ -582,7 +582,7 @@ body {
 /* 点赞按钮（Uiverse.io by LilaRest 风格） */
 .like-btn {
   position: relative;
-  display: flex;
+  display: inline-flex;
   justify-content: center;
   align-items: center;
   padding: 14px 20px 14px 18px;
@@ -2232,4 +2232,16 @@ body {
   .hero-entries { gap: 6px; padding: 5px; }
   .hero-entry { padding: 6px 11px; font-size: 12px; gap: 5px; }
   .hero-entry svg { width: 13px; height: 13px; }
+}
+
+/* ===== 隐藏所有默认滚动条（保留滚动功能） ===== */
+* {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+*::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
+  background: transparent;
 }
