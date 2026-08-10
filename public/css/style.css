@@ -579,39 +579,72 @@ body {
   text-align: center;
 }
 
+/* 点赞按钮（Uiverse.io by LilaRest 风格） */
 .like-btn {
-  display: inline-flex;
-  align-items: center;
+  position: relative;
+  display: flex;
   justify-content: center;
-  gap: 8px;
-  padding: 12px 28px;
-  border: none;
-  border-radius: 24px;
-  background: var(--neu-bg);
-  color: var(--primary);
-  font-size: 15px;
-  font-weight: 600;
+  align-items: center;
+  padding: 14px 20px 14px 18px;
+  box-shadow: rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
+  background-color: #e8e8e8;
+  border-color: #ffe2e2;
+  border-style: solid;
+  border-width: 6px;
+  border-radius: 35px;
+  font-size: 18px;
   cursor: pointer;
-  transition: all 0.2s;
+  font-weight: 900;
+  color: rgb(134, 124, 124);
+  font-family: monospace, -apple-system, "PingFang SC", sans-serif;
+  transition:
+    transform 400ms cubic-bezier(0.68, -0.55, 0.27, 2.5),
+    border-color 400ms ease-in-out,
+    background-color 400ms ease-in-out;
+  word-spacing: -2px;
   user-select: none;
-  box-shadow: var(--neu-shadow-sm);
+}
+
+@keyframes movingBorders {
+  0% { border-color: #fce4e4; }
+  50% { border-color: #ffd8d8; }
+  90% { border-color: #fce4e4; }
+}
+
+.like-btn:hover {
+  background-color: #eee;
+  transform: scale(105%);
+  animation: movingBorders 3s infinite;
 }
 
 .like-btn svg {
-  width: 22px;
-  height: 22px;
-  transition: transform 0.2s;
+  margin-right: 11px;
+  fill: rgb(255, 110, 110);
+  transition: opacity 100ms ease-in-out;
 }
 
-.like-btn:active svg {
-  transform: scale(1.4);
+.like-btn .filled {
+  position: absolute;
+  opacity: 0;
+  top: 50%;
+  left: 18px;
+  transform: translateY(-50%);
 }
 
-.like-btn.liked {
-  background: var(--primary);
-  color: #fff;
-  box-shadow: var(--neu-pressed);
+@keyframes beatingHeart {
+  0% { transform: translateY(-50%) scale(1); }
+  15% { transform: translateY(-50%) scale(1.15); }
+  30% { transform: translateY(-50%) scale(1); }
+  45% { transform: translateY(-50%) scale(1.15); }
+  60% { transform: translateY(-50%) scale(1); }
 }
+
+.like-btn:hover .empty { opacity: 0; }
+.like-btn:hover .filled { opacity: 1; animation: beatingHeart 1.2s infinite; }
+
+/* 已点赞：保持实心心形并持续心跳 */
+.like-btn.liked .empty { opacity: 0; }
+.like-btn.liked .filled { opacity: 1; animation: beatingHeart 1.2s infinite; }
 
 .like-btn:disabled {
   cursor: default;
