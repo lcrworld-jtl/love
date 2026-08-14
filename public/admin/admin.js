@@ -268,11 +268,27 @@ async function renderApplyTab() {
         </div>
         <div class="list-card-body">${fieldsHtml}</div>
         <div class="list-card-actions">
+          <button class="btn btn-primary" onclick="approveApplication('${a.id}')">一键通过</button>
           <button class="btn btn-danger" onclick="delApplication('${a.id}')">删除</button>
         </div>
       </div>
     `;
   }).join('');
+}
+
+async function approveApplication(id) {
+  if (!confirm('确认通过该申请并把申请者设为正式成员？')) return;
+  const res = await fetch('/api/applications/' + id + '/approve', {
+    method: 'POST',
+    headers: { 'Authorization': 'Bearer ' + token }
+  });
+  const r = await res.json().catch(() => ({}));
+  if (res.ok) {
+    showToast('已通过：' + (r.person || ''));
+    renderApplyTab();
+  } else {
+    showToast(r.error || '通过失败');
+  }
 }
 
 async function delApplication(id) {

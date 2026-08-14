@@ -374,6 +374,38 @@ app.delete('/api/applications/:id', auth, (req, res) => {
   }
 });
 
+// 入驻申请一键通过：把申请者信息写入对应角色板块，并移除该申请
+app.post('/api/applications/:id/approve', auth, (req, res) => {
+  try {
+    const apps = readApplications();
+    const idx = apps.findIndex(a => a.id === req.params.id);
+    if (idx === -1) return res.status(404).json({ error: '申请不存在' });
+    const a = apps[idx];
+
+    const data = readJson(DATA_FILE, { title: '', subtitle: '', sections: [] });
+    const sections = data.sections || [];
+    const sec = sections.find(s => s.type === 'role' && (s.role === a.role || s.title === a.role));
+    if (!sec) return res.status(404).json({ error: '未在内容中找到「' + (a.role || '') + '」角色板块，请先在内容板块配置' });
+    if (sec.occupied) return res.status(400).json({ error: '该角色已有人入驻，不能重复通过' });
+
+    // 写入入驻信息
+    sec.occupied = true;
+    sec.person = a.person || a.realName || a.name || '';
+    const map = { gender: 'gender', zodiac: 'zodiac', birthDate: 'birthDate', classInfo: 'classInfo', hobbies: 'hobbies', message: 'message' };
+    Object.keys(map).forEach(k => { if (a[k]) sec[map[k]] = a[k]; });
+
+    writeJson(DATA_FILE, data);
+
+    // 移除该申请
+    apps.splice(idx, 1);
+    writeJson(APPLY_FILE, apps);
+
+    res.json({ ok: true, person: sec.person });
+  } catch (e) {
+    res.status(500).json({ error: '通过失败' });
+  }
+});
+
 // ===== 留言墙 API =====
 // GET 公开（只返回已审核通过），POST 公开提交（待审核）
 app.get('/api/messages', (req, res) => {
