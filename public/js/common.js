@@ -4,6 +4,16 @@
 (function () {
   'use strict';
 
+  // iframe 模式：由顶层 shell 统一提供播放器/特效
+  const IN_IFRAME = window.self !== window.top;
+  if (IN_IFRAME) {
+    // 移除页面自带的音乐播放器 DOM，避免与顶层常驻播放器重复
+    ['music-player', 'music-playlist', 'playlist-overlay'].forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) el.parentNode.removeChild(el);
+    });
+  }
+
   // ===== 访问者唯一 ID（localStorage 持久化） =====
   function getVisitorId() {
     let id = localStorage.getItem('love_visitor_id');

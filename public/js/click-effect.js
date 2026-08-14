@@ -1,5 +1,7 @@
 // 点击爱心特效
 (function() {
+  // iframe 模式：特效由顶层 shell 统一提供，本页不再初始化
+  if (window.self !== window.top) return;
   const canvas = document.getElementById('effect-canvas');
   const ctx = canvas.getContext('2d');
   let W, H, particles = [];

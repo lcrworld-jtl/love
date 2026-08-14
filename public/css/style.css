@@ -47,12 +47,33 @@ body {
     radial-gradient(ellipse at 80% 50%, rgba(255,107,157,0.03) 0%, transparent 50%);
 }
 
+/* 柔和流动的渐晕背景，让页面显得更有呼吸感 */
+body::before {
+  content: '';
+  position: fixed;
+  inset: -50%;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 30% 40%, rgba(255,107,157,0.06) 0%, transparent 45%),
+    radial-gradient(circle at 70% 60%, rgba(255,179,198,0.08) 0%, transparent 45%);
+  animation: aurora 18s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+@keyframes aurora {
+  0%   { transform: translate3d(0, 0, 0) rotate(0deg); }
+  50%  { transform: translate3d(2%, 2%, 0) rotate(2deg); }
+  100% { transform: translate3d(-2%, -1%, 0) rotate(-2deg); }
+}
+
 #sakura-canvas {
   position: fixed;
   top: 0; left: 0;
   width: 100%; height: 100%;
   pointer-events: none;
-  z-index: 1;
+  /* 位于 iframe 内容之上，樱花飘落点缀前景 */
+  z-index: 5;
 }
 
 #effect-canvas {
@@ -61,6 +82,22 @@ body {
   width: 100%; height: 100%;
   pointer-events: none;
   z-index: 100;
+}
+
+/* ===== 顶层 shell：iframe 容器（切换页面不刷新，音乐常驻不断） ===== */
+.app-frame {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100vh;
+  border: none;
+  background: var(--bg);
+  z-index: 2;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+.app-frame.ready {
+  opacity: 1;
 }
 
 /* ===== 主容器 ===== */
@@ -94,6 +131,10 @@ body {
   color: var(--primary);
   letter-spacing: 4px;
   min-height: 1.2em;
+  /* 丝滑入场：上浮淡入 + 柔和光晕呼吸 */
+  opacity: 0;
+  animation: heroFadeUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.05s forwards,
+             titleGlow 4s ease-in-out 1.2s infinite;
 }
 
 .subtitle {
@@ -102,6 +143,18 @@ body {
   margin-top: 10px;
   min-height: 1.5em;
   letter-spacing: 1px;
+  opacity: 0;
+  animation: heroFadeUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards;
+}
+
+@keyframes heroFadeUp {
+  from { opacity: 0; transform: translateY(22px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes titleGlow {
+  0%, 100% { text-shadow: 0 0 12px rgba(255,107,157,0.18); }
+  50%      { text-shadow: 0 0 26px rgba(255,107,157,0.38); }
 }
 
 .hero-scroll-hint {

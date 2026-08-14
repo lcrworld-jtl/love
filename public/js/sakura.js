@@ -1,5 +1,7 @@
 // 樱花飘落特效 - 基于开源canvas樱花动画
 (function() {
+  // iframe 模式：特效由顶层 shell 统一提供，本页不再初始化
+  if (window.self !== window.top) return;
   const canvas = document.getElementById('sakura-canvas');
   const ctx = canvas.getContext('2d');
   let W, H, petals = [];

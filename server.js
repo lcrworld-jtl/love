@@ -973,6 +973,10 @@ app.get('/admin*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'admin', 'index.html'));
 });
 
+app.get('/home', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'home.html'));
+});
+
 app.get('/lover', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'lover.html'));
 });

@@ -1,13 +1,14 @@
 // Love 站点 Service Worker
 // 策略：API 请求网络优先（数据时效性），静态资源缓存优先（含离线兜底）
 
-const CACHE_VERSION = 'love-v26';
+const CACHE_VERSION = 'love-v27';
 const STATIC_CACHE = CACHE_VERSION + '-static';
 const RUNTIME_CACHE = CACHE_VERSION + '-runtime';
 
 // 预缓存的静态资源
 const PRECACHE_URLS = [
   '/',
+  '/home',
   '/lover',
   '/capsule',
   '/stars',
@@ -19,6 +20,9 @@ const PRECACHE_URLS = [
   '/js/common.js',
   '/js/sakura.js',
   '/js/click-effect.js',
+  '/js/gesture.js',
+  '/js/music-player.js',
+  '/js/shell.js',
   '/manifest.json'
 ];
 

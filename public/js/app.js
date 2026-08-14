@@ -900,6 +900,8 @@ function typewriter(elementId, text, callback, speed) {
 // ===== 背景音乐播放器 =====
 
 function initMusicPlayer() {
+  // iframe 模式：音乐播放器由顶层 shell 常驻提供，本页不初始化
+  if (window.self !== window.top) return;
   const player = document.getElementById('music-player');
   if (!player) return; // 无播放器元素则跳过
   const cover = document.getElementById('music-cover');

@@ -6,6 +6,9 @@
 (function () {
   'use strict';
 
+  // iframe 模式：音乐播放器由顶层 shell 常驻提供，本页不再注入
+  if (window.self !== window.top) return;
+
   // 如果页面已有 app.js 管理的播放器，跳过（避免双重初始化）
   if (document.getElementById('music-player')) return;
 

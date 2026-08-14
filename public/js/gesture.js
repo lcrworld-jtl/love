@@ -1,5 +1,7 @@
 // 手势驱动动画 - 滑动时生成粉色拖尾粒子
 (function() {
+  // iframe 模式：特效由顶层 shell 统一提供，本页不再初始化
+  if (window.self !== window.top) return;
   const canvas = document.getElementById('effect-canvas');
   const ctx = canvas.getContext('2d');
   let W, H, trails = [];
