@@ -918,7 +918,8 @@ function initMusicPlayer() {
   let songs = [];
   let currentIdx = 0;
   let isPlaying = false;
-  let isLoadingUrl = false;
+  // 请求令牌：每次切歌自增，用于作废上一次仍在进行中的异步加载/播放结果
+  let loadToken = 0;
 
   const PLAY_ICON = '<path d="M8 5v14l11-7z"/>';
   const PAUSE_ICON = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
@@ -1066,6 +1067,9 @@ function initMusicPlayer() {
   async function playSong(idx, startTime) {
     if (!songs.length) return;
 
+    // 令牌自增：让任何仍在进行中的旧加载/播放结果全部作废
+    const token = ++loadToken;
+
     // 立即更新 UI，让用户看到点击反馈
     currentIdx = idx;
     const song = songs[idx];
@@ -1073,10 +1077,6 @@ function initMusicPlayer() {
     statusEl.textContent = '加载中...';
     updateCover(song);
     renderPlaylist();
-
-    // 如果已有请求在加载中，跳过（不阻塞 UI 更新）
-    if (isLoadingUrl) return;
-    isLoadingUrl = true;
 
     // 清理旧 audio，移除所有事件监听避免误触发 error/ended
     if (audio) {
@@ -1089,19 +1089,15 @@ function initMusicPlayer() {
 
     try {
       const res = await fetch('/api/music/url?id=' + song.id);
+      if (token !== loadToken) return; // 已被更新的切歌取代
       const data = await res.json();
-
-      // 修复竞态条件：如果用户在此期间点击了其他歌曲，放弃当前结果，立即加载新歌曲
-      if (idx !== currentIdx) {
-        isLoadingUrl = false;
-        playSong(currentIdx);
-        return;
-      }
+      if (token !== loadToken) return;
 
       if (!data.url) {
         statusEl.textContent = '无版权，跳过';
-        isLoadingUrl = false;
-        setTimeout(() => playSong((currentIdx + 1) % songs.length), 1500);
+        setTimeout(() => {
+          if (token === loadToken) playSong((currentIdx + 1) % songs.length);
+        }, 1500);
         return;
       }
 
@@ -1142,15 +1138,15 @@ function initMusicPlayer() {
       }
 
       await newAudio.play();
+      if (token !== loadToken) return; // 播放期间又被切了歌，放弃
       isPlaying = true;
-      isLoadingUrl = false;
       iconEl.innerHTML = PAUSE_ICON;
       cover.classList.add('spinning');
       statusEl.textContent = '播放中';
       saveMusicState();
 
     } catch (e) {
-      isLoadingUrl = false;
+      if (token !== loadToken) return;
       isPlaying = false;
       iconEl.innerHTML = PLAY_ICON;
       cover.classList.remove('spinning');
