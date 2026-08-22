@@ -16,3 +16,7 @@ data/gallery/
 .DS_Store
 Thumbs.db
 *.log
+
+# 本地调查/测试脚本（不部署）
+/_*.js
+/_*.json

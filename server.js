@@ -44,6 +44,8 @@ const BUCKET_FILE = path.join(DATA_DIR, 'bucket_list.json');
 const AGREEMENT_FILE = path.join(DATA_DIR, 'agreement.json');
 const NETEASE_API = process.env.NETEASE_API || 'http://127.0.0.1:3002';
 const PLAYLIST_ID = process.env.PLAYLIST_ID || '';
+// 内部 ALTCHA(人机验证/eagle-eye-audit)服务地址
+const ALTCHA_API = process.env.ALTCHA_API || 'http://127.0.0.1:18080';
 
 // 确保目录存在
 if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
@@ -252,6 +254,52 @@ function fetchNetease(apiPath) {
   });
 }
 
+// ===== ALTCHA(人机验证) 代理：转发到内部 eagle-eye-audit 服务 =====
+function proxyAltcha(apiPath, method, body) {
+  return new Promise((resolve, reject) => {
+    const data = body ? JSON.stringify(body) : null;
+    const req = http.request(ALTCHA_API + apiPath, {
+      method: method || 'GET',
+      headers: data
+        ? { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(data) }
+        : {}
+    }, (res) => {
+      let c = '';
+      res.on('data', d => c += d);
+      res.on('end', () => {
+        try { resolve(JSON.parse(c)); }
+        catch (e) { reject(new Error('ALTCHA 响应解析失败')); }
+      });
+    });
+    req.on('error', reject);
+    req.setTimeout(8000, () => {
+      req.destroy();
+      reject(new Error('ALTCHA 请求超时'));
+    });
+    if (data) req.write(data);
+    req.end();
+  });
+}
+
+// 校验 altcha payload 是否通过（返回 true/false）
+async function checkAltcha(payload) {
+  if (!payload) return false;
+  try {
+    const r = await proxyAltcha('/captcha/verify', 'POST', { altcha: payload });
+    return !!(r && r.verification && r.verification.verified);
+  } catch (e) {
+    console.warn('ALTCHA 验证失败:', e.message);
+    return false;
+  }
+}
+
+// 获取人机验证挑战（供前端 altcha-widget 使用，同源代理避免跨域）
+app.get('/api/captcha/challenge', (req, res) => {
+  proxyAltcha('/captcha/challenge')
+    .then(d => res.json(d))
+    .catch(() => res.status(502).json({ error: '验证码服务暂不可用，请稍后再试' }));
+});
+
 // ===== 健康检查 =====
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', uptime: process.uptime() });
@@ -414,13 +462,16 @@ app.get('/api/messages', (req, res) => {
   res.json({ messages: approved });
 });
 
-app.post('/api/messages', (req, res) => {
+app.post('/api/messages', async (req, res) => {
   try {
-    const { name, content } = req.body;
+    const { name, content, altcha } = req.body;
     if (!content || !content.trim()) return res.status(400).json({ error: '内容不能为空' });
     if (content.length > 500) return res.status(400).json({ error: '内容过长' });
     if (!rateLimit('msg:' + getClientIp(req), 10, 60 * 1000)) {
       return res.status(429).json({ error: '操作太频繁' });
+    }
+    if (!await checkAltcha(altcha)) {
+      return res.status(400).json({ error: '人机验证未通过，请稍后重试' });
     }
     const all = readJson(MESSAGES_FILE, []);
     const msg = {
@@ -654,9 +705,15 @@ const VOICE_EXT_MAP = {
   'audio/mpeg': 'mp3'
 };
 
-app.post('/api/voice/upload', (req, res) => {
+app.post('/api/voice/upload', async (req, res) => {
   try {
     if (!req.body || !req.body.length) return res.status(400).json({ error: '无音频数据' });
+    // 人机验证：altcha 通过 query 携带（body 为裸音频）
+    let altcha = null;
+    try { altcha = JSON.parse(decodeURIComponent(req.query.altcha || '')); } catch (e) { altcha = null; }
+    if (!await checkAltcha(altcha)) {
+      return res.status(400).json({ error: '人机验证未通过，请重新录制' });
+    }
     if (!rateLimit('voice:' + getClientIp(req), 5, 60 * 1000)) {
       return res.status(429).json({ error: '操作太频繁' });
     }

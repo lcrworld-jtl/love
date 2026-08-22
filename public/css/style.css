@@ -990,6 +990,13 @@ body::before {
   padding: 16px 0;
 }
 
+/* 人机验证组件容器间距 */
+.altcha-box {
+  margin-top: 14px;
+  display: flex;
+  justify-content: center;
+}
+
 .voice-btn {
   padding: 14px 28px;
   background: var(--primary);

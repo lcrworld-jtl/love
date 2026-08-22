@@ -22,6 +22,51 @@
     return new Date(iso).toLocaleDateString('zh-CN');
   }
 
+  // ===== ALTCHA(人机验证) 组件辅助 =====
+  let altchaScriptLoading = null;
+  function loadAltchaWidgetScript() {
+    if (typeof window.customElements === 'undefined') return Promise.resolve();
+    if (customElements.get('altcha-widget')) return Promise.resolve();
+    if (altchaScriptLoading) return altchaScriptLoading;
+    altchaScriptLoading = new Promise((resolve) => {
+      const s = document.createElement('script');
+      s.src = '/js/altcha-widget.min.js';
+      s.type = 'module';
+      s.onload = () => {
+        const check = () => customElements.get('altcha-widget') ? resolve() : setTimeout(check, 40);
+        check();
+      };
+      s.onerror = () => resolve();
+      document.head.appendChild(s);
+    });
+    return altchaScriptLoading;
+  }
+
+  // 向容器内的 .altcha-box 注入验证码组件（每个容器只注入一次）
+  function ensureAltchaBox(container) {
+    const box = container.querySelector('.altcha-box');
+    if (!box || box.dataset.altchaReady) return;
+    box.dataset.altchaReady = '1';
+    loadAltchaWidgetScript().then(() => {
+      if (customElements.get('altcha-widget')) {
+        const w = document.createElement('altcha-widget');
+        w.setAttribute('challengeurl', '/api/captcha/challenge');
+        box.appendChild(w);
+      } else {
+        box.innerHTML = '<div style="font-size:12px;color:#999;">验证码组件加载失败，请刷新页面后重试</div>';
+      }
+    });
+  }
+
+  // 取容器的验证码状态（未完成时返回 null）
+  function getAltchaState(container) {
+    const w = container && container.querySelector('altcha-widget');
+    if (!w || typeof w.getState !== 'function') return null;
+    const st = w.getState();
+    if (!st || !st.solution) return null;
+    return st;
+  }
+
   // ===== 留言墙 =====
   async function loadMessages(container) {
     const data = await api('/api/messages');
@@ -62,12 +107,17 @@
       showToast('留言内容不能为空');
       return;
     }
+    const altcha = getAltchaState(container);
+    if (!altcha) {
+      showToast('请先完成人机验证');
+      return;
+    }
     const btn = container.querySelector('.msg-submit');
     if (btn) btn.disabled = true;
     const data = await api('/api/messages', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: name || '匿名', content })
+      body: JSON.stringify({ name: name || '匿名', content, altcha })
     });
     if (btn) btn.disabled = false;
     if (data) {
@@ -90,12 +140,14 @@
         <div class="msg-form">
           <input type="text" class="msg-input-name" placeholder="昵称（选填）" maxlength="20">
           <textarea class="msg-input-content" placeholder="写下你想说的话..." maxlength="500" rows="2"></textarea>
+          <div class="altcha-box"></div>
           <button class="msg-submit">送出</button>
         </div>
         <div class="msg-list"></div>
       </div>
     `;
     container.querySelector('.msg-submit').addEventListener('click', () => submitMessage(container));
+    ensureAltchaBox(container);
     loadMessages(container);
     return container;
   }
@@ -106,7 +158,7 @@
   let recordTimer = null;
   let recordStart = 0;
 
-  async function startRecording(btn, statusEl) {
+  async function startRecording(btn, statusEl, container) {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       audioChunks = [];
@@ -121,7 +173,7 @@
       mediaRecorder.onstop = async () => {
         const blob = new Blob(audioChunks, { type: mime || 'audio/webm' });
         stream.getTracks().forEach(t => t.stop());
-        await uploadVoice(blob, btn, statusEl, mime || 'audio/webm');
+        await uploadVoice(blob, btn, statusEl, mime || 'audio/webm', container);
       };
       mediaRecorder.start();
       recordStart = Date.now();
@@ -150,12 +202,16 @@
     statusEl.textContent = '上传中...';
   }
 
-  async function uploadVoice(blob, btn, statusEl, mime) {
+  async function uploadVoice(blob, btn, statusEl, mime, container) {
+    const altcha = getAltchaState(container);
+    if (!altcha) {
+      statusEl.textContent = '';
+      showToast('请先完成人机验证，再重新录制');
+      return;
+    }
     const duration = Math.floor((Date.now() - recordStart) / 1000);
-    const formData = new FormData();
-    formData.append('audio', blob);
     try {
-      const res = await fetch('/api/voice/upload?duration=' + duration + '&from=' + encodeURIComponent('匿名'), {
+      const res = await fetch('/api/voice/upload?duration=' + duration + '&from=' + encodeURIComponent('匿名') + '&altcha=' + encodeURIComponent(JSON.stringify(altcha)), {
         method: 'POST',
         headers: { 'Content-Type': mime },
         body: blob
@@ -204,12 +260,23 @@
           <span>语音留言</span>
         </div>
         <div class="voice-recorder">
-          <button class="voice-btn" disabled>语音上传暂停服务</button>
-          <div class="voice-status voice-status--notice">因网络信息安全备案要求，语音上传功能暂时关闭，恢复时间另行通知。</div>
+          <button class="voice-btn">按住说话 / 点击录音</button>
+          <div class="voice-status"></div>
+          <div class="altcha-box"></div>
         </div>
         <div class="voice-list"></div>
       </div>
     `;
+    const recBtn = container.querySelector('.voice-btn');
+    const statusEl = container.querySelector('.voice-status');
+    recBtn.addEventListener('click', () => {
+      if (mediaRecorder && mediaRecorder.state === 'recording') {
+        stopRecording(recBtn, statusEl);
+      } else {
+        startRecording(recBtn, statusEl, container);
+      }
+    });
+    ensureAltchaBox(container);
     loadVoices(container);
     return container;
   }
